@@ -37,6 +37,7 @@ Read `known-facts.md` and the newest file in `log/`.
     - **TaskNotes**: `complete_task` on the matching task.
     - **Calendar**: never delete. Keep the event as a record: add `✅ ` to the start of its title and add `Done <date> (via Luna)` to its description (`update_event`). Do this for every matching event (e.g. both a booking and a reminder).
     - Otherwise note it in known-facts. For an email card, Done means "I've handled it".
+  - **ok**: seen it, nothing to change. Change nothing anywhere. Only bring the card back if something new happens (new email, date moved, it becomes due).
   - **tomorrow** (old name: later): bring the card back tomorrow, or on the day he names in his reply.
   - **drop** (old name: skip): drop it and add it to known-facts so it doesn't come back.
   - **reply text**: do what it says (add/edit a task, add/update a calendar event, draft an email). Use a Sonnet helper for the doing.

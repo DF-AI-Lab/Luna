@@ -93,7 +93,8 @@ section h2::after { content: ""; flex: 1; height: 1px; background: linear-gradie
 .plan { border-radius: 12px; padding: 11px 14px; font-size: .95rem; background: rgba(169, 155, 255, .09); border: 1px solid rgba(169, 155, 255, .16); }
 .plan b { font-family: var(--ui); color: var(--violet); }
 
-.btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.btns button { padding-left: 4px; padding-right: 4px; }
 button { font: 700 .95rem var(--ui); cursor: pointer; border-radius: 12px; padding: 11px 10px;
   border: 1px solid var(--edge); background: rgba(255, 255, 255, .03); color: var(--fg); transition: background .15s, border-color .15s; }
 button:hover { background: rgba(255, 255, 255, .08); }
@@ -369,9 +370,10 @@ function render(brief) {
 function wire(card) {
   const id = card.dataset.id;
   const btns = el('div', 'btns');
-  ['Done', 'Tomorrow', 'Drop'].forEach(label => {
+  ['OK', 'Done', 'Tomorrow', 'Drop'].forEach(label => {
     const b = el('button', null, label); b.type = 'button'; b.dataset.action = label.toLowerCase();
     b.onclick = () => {
+      if (label === 'OK') { set(id, card, { action: 'ok' }); closeCard(card, true); return; }
       if (label === 'Done') { set(id, card, { action: 'done' }); stardust(card); return; }
       if (label === 'Drop' || label === 'Tomorrow') { setTimeout(save, 0); }
       const was = b.classList.contains('on');
@@ -417,10 +419,10 @@ function restore(saved) {
     const card = document.querySelector('.card[data-id="' + CSS.escape(id) + '"]');
     if (!card) continue;
     if (a.reply) card.querySelector('textarea').value = a.reply;
-    if (a.action && a.action !== 'done') card.querySelector('[data-action="' + a.action + '"]')?.classList.add('on');
+    if (a.action && a.action !== 'done' && a.action !== 'ok') card.querySelector('[data-action="' + a.action + '"]')?.classList.add('on');
     set(id, card, { action: a.action || '', reply: a.reply || '' });
     if (a.result) { answers[id].result = a.result; answers[id].doneNow = a.doneNow; const st = card.querySelector('.status'); st.hidden = false; st.textContent = (a.doneNow ? '✓ ' : '') + a.result; }
-    if (a.closed) { answers[id].closed = true; closeCard(card, false); }
+    if (a.closed || a.action === 'ok') { answers[id].closed = true; closeCard(card, false); }
     else if (a.result && a.doneNow) card.querySelector('.okrow').hidden = false;
     else if (a.reply && !a.result) { card.querySelector('.go').hidden = false; card.querySelector('.replyrow').hidden = false; }
   }
@@ -487,7 +489,7 @@ function closeCard(card, animate) {
   const fold = () => {
     const g = el('div', 'gone'); const sp = el('span', null, '✓ ' + title);
     const b = el('button', null, 'Show'); b.type = 'button';
-    b.onclick = () => { card.hidden = false; g.remove(); if (answers[id]) { answers[id].closed = false; save(true); } };
+    b.onclick = () => { card.hidden = false; g.remove(); if (answers[id]) { answers[id].closed = false; if (answers[id].action === 'ok') set(id, card, { action: '' }); save(true); } };
     g.append(sp, b); card.hidden = true; card.classList.remove('dusting'); card.after(g);
   };
   if (animate) { save(true); card.classList.add('dusting'); setTimeout(fold, 450); } else fold();
