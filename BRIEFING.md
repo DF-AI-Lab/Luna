@@ -32,7 +32,10 @@ Read `known-facts.md` and the newest file in `log/`.
 ### 2. Act on yesterday's replies
 - `ArtifactData get` on `briefing/today` (the old cards) and `replies/<that briefing's date>`.
 - For each answer:
-  - **done**: mark it done where it lives (TaskNotes `complete_task`, or note it in known-facts). For an email card, Done means "I've handled it".
+  - **done**: mark it done everywhere it lives:
+    - **TaskNotes**: `complete_task` on the matching task.
+    - **Calendar**: never delete. Keep the event as a record: add `✅ ` to the start of its title and add `Done <date> (via Luna)` to its description (`update_event`). Do this for every matching event (e.g. both a booking and a reminder).
+    - Otherwise note it in known-facts. For an email card, Done means "I've handled it".
   - **later**: bring the card back tomorrow or on the day he names.
   - **skip**: drop it and add it to known-facts so it doesn't come back.
   - **reply text**: do what it says (add/edit a task, add/update a calendar event, draft an email). Use a Sonnet helper for the doing.
