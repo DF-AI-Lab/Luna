@@ -1,0 +1,210 @@
+<title>Luna Style Picker</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300&family=Cinzel:wght@500&family=Michroma&family=Josefin+Sans:wght@200&family=Italiana&family=Manrope:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: same deep-space sky as the card page. Two pick-lists: 5 wordmarks, then 4 exit animations to try. */
+:root {
+  color-scheme: dark;
+  --sky-top: #03050f; --sky-mid: #0a1130; --sky-low: #1d1d45;
+  --glass: rgba(255,255,255,.04); --glass-hi: rgba(255,255,255,.075); --edge: rgba(190,200,255,.14);
+  --fg: #f1f2ff; --muted: #a3a8c8; --violet: #a99bff; --violet-deep: #6c5ce7; --moon: #f4ecd2; --green: #7fe0a8;
+  --ui: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--sky-top); }
+body {
+  min-height: 100vh; margin: 0; color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.5;
+  background: radial-gradient(90% 60% at 50% 115%, rgba(255,170,120,.12), transparent 70%),
+              linear-gradient(180deg, var(--sky-top), var(--sky-mid) 55%, var(--sky-low)) fixed;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 60px;
+}
+#stars, #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+#stars { z-index: 0; } #fx { z-index: 6; }
+.wrap { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+h1 { font-family: var(--ui); font-size: 1.5rem; margin: 0; }
+.intro { color: var(--muted); margin: 6px 0 0; }
+h2 { font-family: var(--ui); font-weight: 700; font-size: .8rem; letter-spacing: .22em; text-transform: uppercase; color: var(--muted);
+  margin: 0 0 14px; display: flex; gap: 10px; align-items: center; }
+h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--edge), transparent); }
+
+/* Wordmarks */
+.marks { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.mark { background: linear-gradient(160deg, var(--glass-hi), var(--glass)); border: 1px solid var(--edge); border-radius: 18px;
+  padding: 22px 18px 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; min-width: 0; }
+.mark .num { font-family: var(--ui); font-weight: 700; font-size: .8rem; color: var(--violet); }
+.mark .word { color: var(--moon); text-shadow: 0 0 26px rgba(244,236,210,.25); line-height: 1; }
+.mark .name { font-family: var(--ui); font-size: .82rem; color: var(--muted); }
+.w1 { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-weight: 300; font-size: 4rem; }
+.w2 { font-family: "Cinzel", Georgia, serif; font-weight: 500; font-size: 2.8rem; letter-spacing: .18em; }
+.w3 { font-family: "Michroma", "Segoe UI", sans-serif; font-size: 2.2rem; letter-spacing: .3em; }
+.w4 { font-family: "Josefin Sans", "Segoe UI", sans-serif; font-weight: 200; font-size: 3rem; letter-spacing: .5em; text-transform: uppercase; }
+.w5 { font-family: "Italiana", Georgia, serif; font-size: 3.4rem; letter-spacing: .12em; }
+
+/* Demo cards */
+.demos { display: flex; flex-direction: column; gap: 14px; }
+.demo { display: flex; flex-direction: column; gap: 8px; }
+.demo .label { font-family: var(--ui); font-size: .9rem; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.demo .label b { color: var(--violet); }
+.demo .label span { color: var(--muted); }
+.slot { position: relative; }
+.card { background: linear-gradient(160deg, var(--glass-hi), var(--glass)); border: 1px solid var(--edge); border-radius: 20px; padding: 18px;
+  display: flex; flex-direction: column; gap: 12px; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 18px 40px -24px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.06); transform-origin: center; }
+.card h3 { margin: 0; font-family: var(--ui); font-size: 1.05rem; }
+.card p { margin: 0; color: var(--muted); font-size: .95rem; }
+.row { display: flex; gap: 8px; }
+button { font: 700 .95rem var(--ui); cursor: pointer; border-radius: 12px; padding: 10px 16px; border: 1px solid var(--edge);
+  background: rgba(255,255,255,.03); color: var(--fg); }
+button:hover { background: rgba(255,255,255,.08); }
+button:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+.done { background: linear-gradient(135deg, var(--violet), var(--violet-deep)); border-color: transparent; color: #fff; }
+.gone { text-align: center; color: var(--green); font-family: var(--ui); font-weight: 700; font-size: .9rem; padding: 10px; }
+.again { font-size: .8rem; padding: 6px 12px; border-radius: 99px; }
+.reply { background: linear-gradient(160deg, var(--glass-hi), var(--glass)); border: 1px solid var(--edge); border-radius: 18px; padding: 18px; font-family: var(--ui); }
+.reply p { margin: 0; }
+.reply p + p { margin-top: 6px; color: var(--muted); font-size: .92rem; }
+
+/* Exit animations */
+@keyframes floatUp { to { transform: translateY(-260px) rotate(-8deg) scale(.35); opacity: 0; filter: blur(3px); } }
+@keyframes spinAway { to { transform: perspective(700px) rotateY(540deg) rotateZ(25deg) scale(.05); opacity: 0; } }
+@keyframes dustFade { to { opacity: 0; filter: blur(8px); transform: scale(1.03); } }
+@keyframes shrinkDot { 60% { transform: scale(.04); opacity: 1; border-radius: 50%; } 100% { transform: scale(.04); opacity: 0; border-radius: 50%; } }
+.out-float { animation: floatUp .9s cubic-bezier(.5,0,.75,0) forwards; }
+.out-spin  { animation: spinAway 1s cubic-bezier(.55,0,.8,.2) forwards; }
+.out-dust  { animation: dustFade .7s ease-out forwards; }
+.out-star  { animation: shrinkDot .55s cubic-bezier(.6,0,.9,.4) forwards; background: #fff; }
+.collapse { transition: height .35s ease, margin .35s ease; overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .out-float, .out-spin, .out-dust, .out-star { animation-duration: .01s; } }
+</style>
+
+<canvas id="stars" aria-hidden="true"></canvas>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<div class="wrap">
+  <header>
+    <h1>Pick your Luna style</h1>
+    <p class="intro">Choose a logo and a "card done" animation. Just tell me the numbers.</p>
+  </header>
+
+  <section>
+    <h2>1 · Luna logo</h2>
+    <div class="marks">
+      <div class="mark"><span class="num">1</span><span class="word w1">Luna</span><span class="name">Elegant serif italic</span></div>
+      <div class="mark"><span class="num">2</span><span class="word w2">LUNA</span><span class="name">Classic carved capitals</span></div>
+      <div class="mark"><span class="num">3</span><span class="word w3">LUNA</span><span class="name">Space-age wide</span></div>
+      <div class="mark"><span class="num">4</span><span class="word w4">Luna</span><span class="name">Thin and airy</span></div>
+      <div class="mark"><span class="num">5</span><span class="word w5">Luna</span><span class="name">Art-deco fine line</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>2 · Card done animation</h2>
+    <div class="demos" id="demos"></div>
+  </section>
+
+  <div class="reply">
+    <p>Reply in chat with your picks, e.g. <b>"Logo 3, animation B"</b></p>
+    <p>You can mix them too, like "B but slower".</p>
+  </div>
+</div>
+
+<script>
+const ANIMS = [
+  { id: 'A', cls: 'out-float', ms: 900,  name: 'Float away',    desc: 'drifts up into the sky and fades' },
+  { id: 'B', cls: 'out-spin',  ms: 1000, name: 'Spin off',      desc: 'spins into the distance' },
+  { id: 'C', cls: 'out-dust',  ms: 700,  name: 'Stardust',      desc: 'breaks into glittering dust', dust: true },
+  { id: 'D', cls: 'out-star',  ms: 550,  name: 'Shooting star', desc: 'shrinks to a star and streaks off', streak: true },
+];
+const demos = document.getElementById('demos');
+ANIMS.forEach(a => {
+  const el = document.createElement('div');
+  el.className = 'demo';
+  el.innerHTML = `<div class="label"><b>${a.id} · ${a.name}</b><span>${a.desc}</span></div><div class="slot"></div>`;
+  demos.appendChild(el);
+  const slot = el.querySelector('.slot');
+  function makeCard() {
+    slot.innerHTML = `<article class="card"><h3>Export from Spring Creator Dashboard</h3><p>Closes today, 5pm</p>
+      <div class="row"><button type="button" class="done">Done</button><button type="button">Later</button><button type="button">Skip</button></div></article>`;
+    slot.style.height = '';
+    slot.querySelector('.done').onclick = () => finish(slot.querySelector('.card'));
+  }
+  function finish(card) {
+    const r = card.getBoundingClientRect();
+    if (a.dust) dust(r);
+    card.classList.add(a.cls);
+    setTimeout(() => {
+      if (a.streak) streak(r.left + r.width / 2, r.top + r.height / 2);
+      slot.style.height = slot.offsetHeight + 'px';
+      slot.classList.add('collapse');
+      requestAnimationFrame(() => { slot.style.height = '44px'; });
+      slot.innerHTML = '<div class="gone">✓ Done <button type="button" class="again">Try again</button></div>';
+      slot.querySelector('.again').onclick = () => { slot.classList.remove('collapse'); makeCard(); };
+    }, a.ms);
+  }
+  makeCard();
+});
+
+// Effects layer: stardust + shooting-star streaks
+const fx = document.getElementById('fx'), fc = fx.getContext('2d');
+let parts = [], running = false;
+function sizeFx() { const d = devicePixelRatio || 1; fx.width = innerWidth * d; fx.height = innerHeight * d; fc.setTransform(d, 0, 0, d, 0, 0); }
+sizeFx(); addEventListener('resize', sizeFx);
+function dust(r) {
+  for (let i = 0; i < 160; i++) {
+    parts.push({ x: r.left + Math.random() * r.width, y: r.top + Math.random() * r.height,
+      vx: (Math.random() - .3) * 1.6, vy: -Math.random() * 2.2 - .3, life: 0, max: 50 + Math.random() * 50,
+      s: .6 + Math.random() * 1.8, c: Math.random() > .5 ? '#cfc6ff' : '#fff6dc' });
+  }
+  run();
+}
+function streak(x, y) { parts.push({ streak: true, x, y, life: 0, max: 45 }); run(); }
+function run() { if (!running) { running = true; requestAnimationFrame(tick); } }
+function tick() {
+  fc.clearRect(0, 0, innerWidth, innerHeight);
+  parts = parts.filter(p => p.life < p.max);
+  for (const p of parts) {
+    p.life++;
+    const k = p.life / p.max;
+    if (p.streak) {
+      const hx = p.x + k * 520, hy = p.y - k * 300;
+      const g = fc.createLinearGradient(hx, hy, hx - 140, hy + 80);
+      g.addColorStop(0, 'rgba(255,255,255,.95)'); g.addColorStop(1, 'rgba(169,155,255,0)');
+      fc.globalAlpha = 1 - k; fc.strokeStyle = g; fc.lineWidth = 2;
+      fc.beginPath(); fc.moveTo(hx, hy); fc.lineTo(hx - 140, hy + 80); fc.stroke();
+      fc.fillStyle = '#fff'; fc.beginPath(); fc.arc(hx, hy, 2.4, 0, 6.283); fc.fill();
+    } else {
+      p.x += p.vx; p.y += p.vy; p.vy -= .02;
+      fc.globalAlpha = (1 - k) * (.6 + .4 * Math.sin(p.life * .5));
+      fc.fillStyle = p.c; fc.beginPath(); fc.arc(p.x, p.y, p.s, 0, 6.283); fc.fill();
+    }
+  }
+  if (parts.length) requestAnimationFrame(tick); else { running = false; fc.clearRect(0, 0, innerWidth, innerHeight); }
+}
+
+// Background stars (moving)
+(function () {
+  const c = document.getElementById('stars'), x = c.getContext('2d');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W, H, d, stars = [];
+  function build() {
+    d = devicePixelRatio || 1; W = c.width = innerWidth * d; H = c.height = innerHeight * d;
+    stars = Array.from({ length: Math.round(innerWidth * innerHeight / 5000) }, () => ({
+      x: Math.random() * W, y: Math.random() * H, r: (.25 + Math.random() ** 3 * 1.4) * d, a: .2 + Math.random() * .7,
+      tw: .4 + Math.random() * 1.6, ph: Math.random() * 6.28, z: .2 + Math.random() * .8 }));
+  }
+  function frame(t) {
+    x.clearRect(0, 0, W, H);
+    for (const p of stars) {
+      if (!still) { p.x -= .035 * p.z * d; if (p.x < -2) p.x = W + 2; }
+      x.globalAlpha = p.a * (still ? 1 : .65 + .35 * Math.sin(t / 1000 * p.tw + p.ph) ) * .8;
+      x.fillStyle = '#fff'; x.beginPath(); x.arc(p.x, p.y, p.r, 0, 6.283); x.fill();
+    }
+    if (!still) requestAnimationFrame(frame);
+  }
+  build(); addEventListener('resize', () => { build(); if (still) frame(0); });
+  requestAnimationFrame(frame);
+})();
+</script>
