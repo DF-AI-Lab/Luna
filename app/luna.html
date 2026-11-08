@@ -105,6 +105,9 @@ textarea::placeholder { color: #767b9e; }
 .status { font-family: var(--ui); font-size: .85rem; font-weight: 700; color: var(--green); }
 .status.busy { color: var(--violet); font-weight: 500; }
 .status.bad { color: var(--amber); font-weight: 500; }
+.okrow { display: flex; justify-content: flex-end; margin-top: 10px; }
+.okrow[hidden] { display: none; }
+.okrow button { font-weight: 700; padding: 8px 22px; border-radius: 99px; }
 .replyrow { display: flex; gap: 8px; justify-content: flex-end; margin-top: -4px; }
 .replyrow button { min-height: 40px; padding: 0 16px; }
 .inbox { position: relative; }
@@ -388,7 +391,11 @@ function wire(card) {
   row.append(go); row.hidden = true;
   const box = el('div', 'inbox'); box.append(ta, mic);
   const st = el('div', 'status'); st.hidden = true;
-  card.append(btns, box, row, st);
+  const okr = el('div', 'okrow'); okr.hidden = true;
+  const ok = el('button', null, 'OK ✓'); ok.type = 'button'; ok.setAttribute('aria-label', 'Close this card');
+  ok.onclick = () => closeCard(card, true);
+  okr.append(ok);
+  card.append(btns, box, row, st, okr);
 }
 function set(id, card, patch) {
   answers[id] = Object.assign({ card: id, title: card.querySelector('h3').textContent }, answers[id], patch);
@@ -413,7 +420,9 @@ function restore(saved) {
     if (a.action && a.action !== 'done') card.querySelector('[data-action="' + a.action + '"]')?.classList.add('on');
     set(id, card, { action: a.action || '', reply: a.reply || '' });
     if (a.result) { answers[id].result = a.result; answers[id].doneNow = a.doneNow; const st = card.querySelector('.status'); st.hidden = false; st.textContent = (a.doneNow ? '✓ ' : '') + a.result; }
-    else if (a.reply) { card.querySelector('.go').hidden = false; card.querySelector('.replyrow').hidden = false; }
+    if (a.closed) { answers[id].closed = true; closeCard(card, false); }
+    else if (a.result && a.doneNow) card.querySelector('.okrow').hidden = false;
+    else if (a.reply && !a.result) { card.querySelector('.go').hidden = false; card.querySelector('.replyrow').hidden = false; }
   }
   const btn = document.getElementById('send');
   if (Object.keys(saved || {}).length) { btn.textContent = 'Saved ✓'; }
@@ -470,6 +479,18 @@ function stardust(card) {
       setTimeout(() => { slot.replaceWith(card); }, 360);
     };
   }, 700);
+}
+// OK: card folds away into one line, kept closed after reload
+function closeCard(card, animate) {
+  const id = card.dataset.id, title = card.querySelector('h3').textContent;
+  if (answers[id]) answers[id].closed = true;
+  const fold = () => {
+    const g = el('div', 'gone'); const sp = el('span', null, '✓ ' + title);
+    const b = el('button', null, 'Show'); b.type = 'button';
+    b.onclick = () => { card.hidden = false; g.remove(); if (answers[id]) { answers[id].closed = false; save(true); } };
+    g.append(sp, b); card.hidden = true; card.classList.remove('dusting'); card.after(g);
+  };
+  if (animate) { save(true); card.classList.add('dusting'); setTimeout(fold, 450); } else fold();
 }
 function tick() {
   fc.clearRect(0, 0, innerWidth, innerHeight);
@@ -574,6 +595,7 @@ async function act(card, kind, text, onLine) {
     show((ok ? '✓ ' : '') + line, ok ? '' : 'bad');
     answers[id] = Object.assign({ card: id, title: c.title || '' }, answers[id], { action: kind === 'done' ? 'done' : (answers[id] && answers[id].action) || '', reply: kind === 'reply' ? text : (answers[id] && answers[id].reply) || '', result: line, doneNow: ok, at: new Date().toISOString() });
     if (ok) addDid((c.title ? c.title + ': ' : '') + line);
+    if (ok && kind === 'reply') card.querySelector('.okrow').hidden = false;
     save(true);
   } catch (e) {
     const msg = { not_granted: 'Luna needs your OK to use Claude here. Saved for the next run instead.',
