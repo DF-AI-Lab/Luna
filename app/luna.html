@@ -103,6 +103,12 @@ textarea { width: 100%; min-height: 46px; resize: vertical; font: inherit; paddi
   border: 1px solid var(--edge); background: rgba(3, 4, 14, .4); color: var(--fg); }
 textarea::placeholder { color: #767b9e; }
 .status { font-family: var(--ui); font-size: .85rem; font-weight: 700; color: var(--green); }
+.status.busy { color: var(--violet); font-weight: 500; }
+.status.bad { color: var(--amber); font-weight: 500; }
+.replyrow { display: flex; gap: 8px; justify-content: flex-end; margin-top: -4px; }
+.replyrow button { min-height: 40px; padding: 0 16px; }
+.replyrow .mic.live { background: rgba(255,120,120,.18); border-color: rgba(255,120,120,.5); }
+.replyrow .go[hidden], .replyrow .mic[hidden] { display: none; }
 .card.answered { opacity: .55; }
 .card.answered .plan, .card.answered ul { display: none; }
 
@@ -125,9 +131,10 @@ pre { background: rgba(3, 4, 14, .55); border: 1px solid var(--edge); border-rad
 #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 6; }
 .card.dusting { animation: dustFade .7s ease-out forwards; pointer-events: none; }
 @keyframes dustFade { to { opacity: 0; filter: blur(8px); transform: scale(1.03); } }
+.card[hidden] { display: none; }
 .slot { transition: height .35s ease; overflow: hidden; }
 .gone { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-family: var(--ui); font-size: .9rem; color: var(--green); font-weight: 700; padding: 8px 4px; }
-.gone span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.gone span { min-width: 0; }
 .gone button { font-size: .8rem; padding: 5px 12px; border-radius: 99px; flex: none; }
 @media (prefers-reduced-motion: reduce) { .card.dusting { animation-duration: .01s; } }
 @media (max-width: 420px) { header { padding-right: 104px; min-height: 116px; } .moon { width: 84px; height: 84px; right: 14px; } }
@@ -325,6 +332,7 @@ function render(brief) {
   briefDate = brief.date; answers = {};
   document.getElementById('dateLabel').textContent = brief.dateLabel || brief.date;
   const cards = Array.isArray(brief.cards) ? brief.cards : [];
+  render.cards = cards;
   total = cards.length;
   document.getElementById('cardCount').textContent = total + (total === 1 ? ' card' : ' cards');
   if (Array.isArray(brief.did) && brief.did.length) {
@@ -359,6 +367,7 @@ function wire(card) {
     const b = el('button', null, label); b.type = 'button'; b.dataset.action = label.toLowerCase();
     b.onclick = () => {
       if (label === 'Done') { set(id, card, { action: 'done' }); stardust(card); return; }
+      if (label === 'Drop' || label === 'Tomorrow') { setTimeout(save, 0); }
       const was = b.classList.contains('on');
       btns.querySelectorAll('button').forEach(z => z.classList.remove('on'));
       if (!was) b.classList.add('on');
@@ -367,9 +376,15 @@ function wire(card) {
     btns.appendChild(b);
   });
   const ta = el('textarea'); ta.id = 'reply-' + id; ta.placeholder = 'Reply to this card…'; ta.setAttribute('aria-label', 'Reply to this card');
-  ta.oninput = () => set(id, card, { reply: ta.value.trim() });
+  const row = el('div', 'replyrow');
+  const mic = el('button', 'mic', '🎤 Speak'); mic.type = 'button'; mic.hidden = !SpeechRec;
+  const go = el('button', 'go', 'Do it now ➤'); go.type = 'button'; go.hidden = true;
+  ta.oninput = () => { set(id, card, { reply: ta.value.trim() }); go.hidden = !ta.value.trim(); };
+  mic.onclick = () => listen(ta, mic);
+  go.onclick = () => { const txt = ta.value.trim(); if (!txt) return; go.hidden = true; act(card, 'reply', txt); };
+  row.append(mic, go);
   const st = el('div', 'status'); st.hidden = true;
-  card.append(btns, ta, st);
+  card.append(btns, ta, row, st);
 }
 function set(id, card, patch) {
   answers[id] = Object.assign({ card: id, title: card.querySelector('h3').textContent }, answers[id], patch);
@@ -393,6 +408,8 @@ function restore(saved) {
     if (a.reply) card.querySelector('textarea').value = a.reply;
     if (a.action && a.action !== 'done') card.querySelector('[data-action="' + a.action + '"]')?.classList.add('on');
     set(id, card, { action: a.action || '', reply: a.reply || '' });
+    if (a.result) { answers[id].result = a.result; answers[id].doneNow = a.doneNow; const st = card.querySelector('.status'); st.hidden = false; st.textContent = (a.doneNow ? '✓ ' : '') + a.result; }
+    else if (a.reply) card.querySelector('.go').hidden = false;
   }
   const btn = document.getElementById('send');
   if (Object.keys(saved || {}).length) { btn.textContent = 'Saved ✓'; }
@@ -435,7 +452,14 @@ function stardust(card) {
     g.querySelector('span').textContent = '✓ ' + card.querySelector('h3').textContent;
     card.hidden = true; card.classList.remove('dusting'); slot.appendChild(g);
     slot.style.height = g.offsetHeight + 'px';
+    const span = g.querySelector('span'), title = card.querySelector('h3').textContent;
+    span.textContent = '✓ ' + title + ' · doing it in 3s';
+    const timer = setTimeout(() => {
+      g.querySelector('button').remove();
+      act(card, 'done', '', line => { span.textContent = title + ' · ' + line; slot.style.height = g.offsetHeight + 'px'; });
+    }, 3000);
     g.querySelector('button').onclick = () => {
+      clearTimeout(timer);
       card.hidden = false; g.remove(); slot.style.height = card.offsetHeight + 'px';
       card.querySelectorAll('.btns button').forEach(z => z.classList.remove('on'));
       set(card.dataset.id, card, { action: '' });
@@ -455,18 +479,103 @@ function tick() {
   if (parts.length) requestAnimationFrame(tick); else { running = false; fc.clearRect(0, 0, innerWidth, innerHeight); }
 }
 
-document.getElementById('send').onclick = async () => {
+async function save(quiet) {
   const btn = document.getElementById('send');
-  btn.disabled = true; btn.textContent = 'Saving…';
+  if (!db || !briefDate) return;
+  if (!quiet) { btn.disabled = true; btn.textContent = 'Saving…'; }
   try {
     await db.doc('replies/' + briefDate).set({ date: briefDate, sentAt: new Date().toISOString(), answers: JSON.parse(JSON.stringify(answers)) });
     btn.textContent = 'Saved ✓';
-    const out = document.getElementById('out'); out.hidden = false;
-    out.textContent = 'Saved. Luna acts on these at the next run.';
+    if (!quiet) { const out = document.getElementById('out'); out.hidden = false; out.textContent = 'Saved. Done and replies happen straight away; the rest at the next run.'; }
   } catch (e) {
     btn.disabled = false; btn.textContent = 'Try again';
     const out = document.getElementById('out'); out.hidden = false;
     out.textContent = e && e.code === 'invalid_argument' ? 'Only Darren can save replies on this page.' : "Couldn't save. Check your connection and try again.";
   }
-};
+}
+document.getElementById('send').onclick = () => save(false);
+
+// Voice: dictate into a card's reply box
+const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null;
+function listen(ta, mic) {
+  if (rec) { rec.stop(); return; }
+  try { rec = new SpeechRec(); } catch (e) { mic.hidden = true; return; }
+  rec.lang = 'en-GB'; rec.interimResults = true; rec.continuous = false;
+  const before = ta.value ? ta.value.trim() + ' ' : '';
+  rec.onresult = e => { ta.value = before + Array.from(e.results).map(r => r[0].transcript).join(''); ta.dispatchEvent(new Event('input')); };
+  rec.onerror = e => {
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+      document.querySelectorAll('.mic').forEach(m => m.hidden = true);
+      const st = ta.closest('.card').querySelector('.status'); st.hidden = false; st.className = 'status bad';
+      st.textContent = "Voice isn't allowed in here. Use the 🎤 on your phone keyboard instead.";
+    }
+  };
+  rec.onend = () => { rec = null; mic.classList.remove('live'); mic.textContent = '🎤 Speak'; };
+  mic.classList.add('live'); mic.textContent = '■ Stop';
+  rec.start();
+}
+
+// Act now: a Sonnet-tier helper does it with your connectors, then says what it did
+let mcp = null, sample = null;
+(async () => { if (!window.claude) return; [mcp, sample] = await Promise.all([window.claude.use('mcp'), window.claude.use('sample')]); })();
+const short = v => { const t = typeof v === 'string' ? v : JSON.stringify(v); return t.length > 6000 ? t.slice(0, 6000) + '…(cut)' : t; };
+function tool(name, description, server, upstream, props, required, fixed) {
+  return { name, description, inputSchema: { type: 'object', properties: props, required: required || [] },
+    async execute(input, ctx) {
+      const args = Object.assign({}, input, fixed || {});
+      const r = await mcp.callTool(server, upstream, args, { signal: ctx.signal });
+      return short(r.payload ?? r.content);
+    } };
+}
+const S = { type: 'string' };
+const TOOLS = () => [
+  tool('tasknotes_list_tasks', 'List open TaskNotes tasks. Each line starts with [id].', 'TaskNotes', 'list_tasks', { search: S, when: S }),
+  tool('tasknotes_complete_task', 'Tick a TaskNotes task off (done=false reopens it).', 'TaskNotes', 'complete_task', { id: S, done: { type: 'boolean' } }, ['id']),
+  tool('tasknotes_edit_task', 'Change a TaskNotes task. Only fields you pass change. due: YYYY-MM-DD.', 'TaskNotes', 'edit_task', { id: S, title: S, due: S, details: S, important: { type: 'boolean' } }, ['id']),
+  tool('tasknotes_add_task', 'Add a TaskNotes task. due: YYYY-MM-DD.', 'TaskNotes', 'add_task', { title: S, due: S, details: S, category: S, important: { type: 'boolean' } }, ['title']),
+  tool('calendar_search_events', 'Search Google Calendar events by words.', 'Google Calendar', 'search_events', { query: S }, ['query']),
+  tool('calendar_list_events', 'List Google Calendar events in a time range (local ISO times, no Z).', 'Google Calendar', 'list_events', { startTime: S, endTime: S, fullText: S }),
+  tool('calendar_update_event', 'Update a Google Calendar event (title=summary, description, times as local ISO).', 'Google Calendar', 'update_event', { eventId: S, summary: S, description: S, startTime: S, endTime: S }, ['eventId'], { notificationLevel: 'NONE' }),
+  tool('calendar_create_event', 'Create a Google Calendar event (local ISO times, no Z).', 'Google Calendar', 'create_event', { summary: S, startTime: S, endTime: S, allDay: { type: 'boolean' }, description: S }, ['summary', 'startTime', 'endTime'], { notificationLevel: 'NONE' }),
+  tool('gmail_search_threads', 'Search Gmail threads (Gmail search syntax).', 'Gmail', 'search_threads', { query: S }, ['query']),
+  tool('gmail_create_draft', 'Save a Gmail DRAFT (never sends). Plain text body.', 'Gmail', 'create_draft', { to: { type: 'array', items: S }, subject: S, body: S, replyToMessageId: S })
+];
+function addDid(line) {
+  const board = document.getElementById('board');
+  let box = board.querySelector('section.did');
+  if (!box) { box = el('section', 'did'); const h = el('h2'); h.append(el('span', 'dot'), 'What Luna did'); box.append(h, el('ul')); board.prepend(box); }
+  box.querySelector('ul').appendChild(el('li', null, line));
+}
+async function act(card, kind, text, onLine) {
+  const id = card.dataset.id, c = (render.cards || []).find(x => x.id === id) || {};
+  const st = card.querySelector('.status');
+  const show = (t, cls) => { if (onLine) onLine(t); st.hidden = false; st.className = 'status' + (cls ? ' ' + cls : ''); st.textContent = t; };
+  if (!mcp || !sample) { show('Saved. Luna will do this at the next run (instant actions need Claude).', 'bad'); save(true); return; }
+  show('Luna is on it…', 'busy');
+  const today = new Date().toISOString().slice(0, 10);
+  const prompt = [
+    "You are Luna's action helper for Darren. Do what he asked on this card using the tools, then reply with ONE short line saying exactly what you changed and where.",
+    'Today is ' + today + ' (UK time).',
+    'Card: ' + JSON.stringify({ title: c.title, when: c.when, lines: c.lines, plan: c.plan, refs: c.refs }),
+    kind === 'done' ? "Darren tapped DONE. That means: tick off the matching TaskNotes task(s) and, for each matching calendar event, keep it but put '✅ ' at the start of its title and add 'Done " + today + " (via Luna)' to its description. If it's an email card with nothing to tick off, just say it's noted."
+                    : 'Darren replied: "' + text + '"',
+    'Rules: never delete anything. Never send email, only save drafts. Find the real item with a search first and use its id. If his request is unclear or you cannot find the item, change nothing and say so in one line, starting with "Not done:".',
+    'Your final line examples: "Ticked off in TaskNotes · calendar reminder marked ✅" or "Moved to Fri 13 Nov in TaskNotes" or "Not done: couldn\'t find a matching task".'
+  ].join('\n');
+  try {
+    const { text: out } = await sample(prompt, { modelTier: 'default', tools: TOOLS() });
+    const line = out.trim().split('\n').filter(Boolean).pop() || 'Done';
+    const ok = !/^not done/i.test(line);
+    show((ok ? '✓ ' : '') + line, ok ? '' : 'bad');
+    answers[id] = Object.assign({ card: id, title: c.title || '' }, answers[id], { action: kind === 'done' ? 'done' : (answers[id] && answers[id].action) || '', reply: kind === 'reply' ? text : (answers[id] && answers[id].reply) || '', result: line, doneNow: ok, at: new Date().toISOString() });
+    if (ok) addDid((c.title ? c.title + ': ' : '') + line);
+    save(true);
+  } catch (e) {
+    const msg = { not_granted: 'Luna needs your OK to use Claude here. Saved for the next run instead.',
+      rate_limited: 'Claude is busy or you hit your usage limit. Saved for the next run.',
+      tools_unavailable: "This view can't do instant actions. Saved for the next run." }[e && e.code] || "Couldn't finish that. Saved for the next run.";
+    show(msg, 'bad'); save(true);
+  }
+}
 </script>

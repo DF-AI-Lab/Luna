@@ -64,7 +64,8 @@
 | 10 | Page is opened from a phone home-screen shortcut to one fixed artifact link | Same link every day | 8 Nov 2026 |
 | 11 | Live page `app/luna.html` reads cards from its own database (`briefing/today`) and saves replies to `replies/<date>`; only Darren can write | Same link daily, no Claude usage when Darren taps | 8 Nov 2026 |
 | 12 | Schedule: daily 7:40am Europe/London, fresh cloud session, push ping when done | Page ready before 8am | 8 Nov 2026 |
-| 13 | Replies are acted on at the next run; emails are drafts only, never sent; nothing deleted | Safe by default | 8 Nov 2026 |
+| 13 | Done and typed/spoken replies happen straight away from the page (Sonnet-tier helper using Darren's connectors, on his Pro usage). Tomorrow/Drop wait for the morning run. Emails are drafts only, nothing deleted (the page has no delete or send tools) | Darren wants it done when he taps it, with a message saying what was done | 8 Nov 2026 |
+| 14 | Voice button on each card (browser speech-to-text). Falls back to the phone keyboard mic if blocked | Faster replies | 8 Nov 2026 |
 
 ## Link to Orbit (app-assistant repo)
 - Luna = the shop. Orbit = the school. `log/` = the receipts.
@@ -104,3 +105,4 @@
 - 8 Nov 2026: First real-data test page built (read only)
 - 8 Nov 2026: V1 built and merged to main: live page, BRIEFING.md run, helper memory, usage log, 7:40am schedule
 - 8 Nov 2026: Buttons renamed to Done / Tomorrow / Drop. Done now also marks calendar events ✅ (never deleted). Moon redrawn
+- 8 Nov 2026: Instant actions from the page + 'What Luna did' box + voice button

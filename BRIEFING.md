@@ -32,6 +32,7 @@ Read `known-facts.md` and the newest file in `log/`.
 ### 2. Act on yesterday's replies
 - `ArtifactData get` on `briefing/today` (the old cards) and `replies/<that briefing's date>`.
 - For each answer:
+  - **Already done on the page** (`doneNow: true`, with a `result` line): Darren's page did it straight away. Don't redo it. Just log it and put its `result` in `did`. If `doneNow` is false or missing, act on it as below.
   - **done**: mark it done everywhere it lives:
     - **TaskNotes**: `complete_task` on the matching task.
     - **Calendar**: never delete. Keep the event as a record: add `✅ ` to the start of its title and add `Done <date> (via Luna)` to its description (`update_event`). Do this for every matching event (e.g. both a booking and a reminder).
