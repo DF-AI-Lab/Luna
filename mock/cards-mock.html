@@ -1,7 +1,7 @@
 <title>Luna Morning Cards</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Great+Vibes&family=Manrope:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Josefin+Sans:wght@200&family=Manrope:wght@500;700&display=swap">
 <style>
 /* Layout: a deep-space sky that shifts with the time of day. Script "Luna" wordmark + moon up top,
    one column of glass cards grouped by urgency, a floating send bar. Single dark look on purpose. */
@@ -25,7 +25,7 @@
   --red: #ff8a80;
   --amber: #f5c26b;
   --green: #7fe0a8;
-  --script: "Great Vibes", "Snell Roundhand", cursive;
+  --script: "Josefin Sans", "Segoe UI", system-ui, sans-serif;
   --ui: "Manrope", "Segoe UI", system-ui, sans-serif;
   --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
 }
@@ -51,7 +51,7 @@ body {
 /* Header */
 header { display: flex; align-items: center; gap: 18px; }
 .moon { width: 80px; height: 80px; flex: none; filter: drop-shadow(0 0 24px rgba(244, 236, 210, .35)); }
-.wordmark { font-family: var(--script); font-weight: 400; font-size: 4rem; line-height: .9; margin: 0; color: var(--moon);
+.wordmark { font-family: var(--script); font-weight: 200; font-size: 3rem; letter-spacing: .5em; text-transform: uppercase; line-height: 1; margin: 0 -.5em 0 0; color: var(--moon);
   text-shadow: 0 0 28px rgba(244, 236, 210, .25); }
 .hello { font-family: var(--ui); font-weight: 500; font-size: 1rem; color: var(--fg); margin-top: 6px; }
 .meta { color: var(--muted); font-family: var(--ui); font-size: .85rem; display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 4px; }
@@ -115,10 +115,19 @@ pre { background: rgba(3, 4, 14, .55); border: 1px solid var(--edge); border-rad
   .card { animation: rise .5s ease both; }
   @keyframes rise { from { transform: translateY(8px); } to { transform: none; } }
 }
-@media (max-width: 420px) { .wordmark { font-size: 3.2rem; } .moon { width: 62px; height: 62px; } }
+#fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 6; }
+.card.dusting { animation: dustFade .7s ease-out forwards; pointer-events: none; }
+@keyframes dustFade { to { opacity: 0; filter: blur(8px); transform: scale(1.03); } }
+.slot { transition: height .35s ease; overflow: hidden; }
+.gone { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-family: var(--ui); font-size: .9rem; color: var(--green); font-weight: 700; padding: 8px 4px; }
+.gone span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.gone button { font-size: .8rem; padding: 5px 12px; border-radius: 99px; flex: none; }
+@media (prefers-reduced-motion: reduce) { .card.dusting { animation-duration: .01s; } }
+@media (max-width: 420px) { .wordmark { font-size: 2.3rem; } .moon { width: 62px; height: 62px; } }
 </style>
 
 <canvas id="stars" aria-hidden="true"></canvas>
+<canvas id="fx" aria-hidden="true"></canvas>
 
 <div class="wrap">
   <header>
@@ -289,6 +298,7 @@ document.querySelectorAll('.card').forEach(card => {
     const b = document.createElement('button');
     b.textContent = label; b.type = 'button';
     b.onclick = () => {
+      if (label === 'Done') { set(id, card, { action: 'done' }); stardust(card); return; }
       const was = b.classList.contains('on');
       btns.querySelectorAll('button').forEach(z => z.classList.remove('on'));
       if (!was) b.classList.add('on');
@@ -313,6 +323,47 @@ function set(id, card, patch) {
   document.getElementById('count').textContent = n + ' of ' + total + ' answered';
   document.getElementById('send').disabled = n === 0;
 }
+// Stardust: card breaks into glitter and the gap closes
+const fx = document.getElementById('fx'), fc = fx.getContext('2d');
+let parts = [], running = false;
+function sizeFx() { const d = devicePixelRatio || 1; fx.width = innerWidth * d; fx.height = innerHeight * d; fc.setTransform(d, 0, 0, d, 0, 0); }
+sizeFx(); addEventListener('resize', sizeFx);
+function stardust(card) {
+  const r = card.getBoundingClientRect();
+  for (let i = 0; i < 180; i++) parts.push({ x: r.left + Math.random() * r.width, y: r.top + Math.random() * r.height,
+    vx: (Math.random() - .3) * 1.6, vy: -Math.random() * 2.2 - .3, life: 0, max: 50 + Math.random() * 50,
+    s: .6 + Math.random() * 1.8, c: Math.random() > .5 ? '#cfc6ff' : '#fff6dc' });
+  if (!running) { running = true; requestAnimationFrame(tick); }
+  const slot = document.createElement('div'); slot.className = 'slot';
+  card.before(slot); slot.appendChild(card);
+  slot.style.height = slot.offsetHeight + 'px';
+  card.classList.add('dusting');
+  setTimeout(() => {
+    const g = document.createElement('div'); g.className = 'gone';
+    g.innerHTML = '<span></span><button type="button">Undo</button>';
+    g.querySelector('span').textContent = '✓ ' + card.querySelector('h3').textContent;
+    card.hidden = true; card.classList.remove('dusting'); slot.appendChild(g);
+    slot.style.height = g.offsetHeight + 'px';
+    g.querySelector('button').onclick = () => {
+      card.hidden = false; g.remove(); slot.style.height = card.offsetHeight + 'px';
+      card.querySelectorAll('.btns button').forEach(z => z.classList.remove('on'));
+      set(card.dataset.id, card, { action: '' });
+      setTimeout(() => { slot.replaceWith(card); }, 360);
+    };
+  }, 700);
+}
+function tick() {
+  fc.clearRect(0, 0, innerWidth, innerHeight);
+  parts = parts.filter(p => p.life < p.max);
+  for (const p of parts) {
+    p.life++; const k = p.life / p.max;
+    p.x += p.vx; p.y += p.vy; p.vy -= .02;
+    fc.globalAlpha = (1 - k) * (.6 + .4 * Math.sin(p.life * .5));
+    fc.fillStyle = p.c; fc.beginPath(); fc.arc(p.x, p.y, p.s, 0, 6.283); fc.fill();
+  }
+  if (parts.length) requestAnimationFrame(tick); else { running = false; fc.clearRect(0, 0, innerWidth, innerHeight); }
+}
+
 document.getElementById('send').onclick = () => {
   const out = document.getElementById('out');
   out.hidden = false;
