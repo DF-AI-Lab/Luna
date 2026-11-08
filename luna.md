@@ -66,6 +66,8 @@
 | 12 | Schedule: daily 7:40am Europe/London, fresh cloud session, push ping when done | Page ready before 8am | 8 Nov 2026 |
 | 13 | Done and typed/spoken replies happen straight away from the page (Sonnet-tier helper using Darren's connectors, on his Pro usage). Tomorrow/Drop wait for the morning run. Emails are drafts only, nothing deleted (the page has no delete or send tools) | Darren wants it done when he taps it, with a message saying what was done | 8 Nov 2026 |
 | 14 | Voice button on each card (browser speech-to-text). Falls back to the phone keyboard mic if blocked | Faster replies | 8 Nov 2026 |
+| 15 | Buttons: OK (seen) · Done · Remind (tomorrow / 3 days / next week / date) · Drop (deletes nothing). All fold with Undo | Clearer than Tomorrow/Drop | 8 Nov 2026 |
+| 16 | Luna + Orbit stay two apps, one look: Smart Luna (online, claude.ai, Pro usage, schedule) + Thick Luna (Orbit reskinned as Luna, offline, free tiny model, learns from Luna's logs). Claude API only as a backup in Thick Luna, with a monthly spend cap | Pro usage only works in claude.ai; offline needs its own app; API costs money so keep it on a leash | 8 Nov 2026 |
 
 ## Link to Orbit (app-assistant repo)
 - Luna = the shop. Orbit = the school. `log/` = the receipts.
@@ -84,6 +86,7 @@
 - Usage: 3 helpers + Opus every day could eat plan usage. Measure on the first runs.
 
 ## Later / V2
+- Thick Luna: reskin Orbit with Luna's look, free model first, API backup with a cap (e.g. £5/month). After Luna's first runs are solid. Start by looking at Orbit's model in DF-AI-Lab/app-assistant
 - Orbit → TaskNotes tidy-up: Orbit drops tasks in cheaply and keeps a raw copy of what Darren asked; each morning a Haiku helper compares the two and fixes or neatens the TaskNotes item. Also dates, duplicates, old tasks
 - Save Darren's requests so Luna learns how he likes things
 - Clean up the earlier Orbit agents attempt
@@ -107,3 +110,4 @@
 - 8 Nov 2026: Buttons renamed to Done / Tomorrow / Drop. Done now also marks calendar events ✅ (never deleted). Moon redrawn
 - 8 Nov 2026: Instant actions from the page + 'What Luna did' box + voice button
 - 2026-11-08: Buttons now OK · Done · Remind (Tomorrow / 3 days / Next week / date) · Drop. All fold with Undo. Drop deletes nothing.
+- 2026-11-08: Decided Luna + Orbit = Smart Luna (online) + Thick Luna (offline, Orbit reskinned), API backup only with a cap. Parked till after first runs
