@@ -93,6 +93,7 @@
 
 ## Build / test progress
 - 8 Nov: V1 built. Live page https://claude.ai/artifact/K9WPKsdLQLMoMyb6iCPm5C seeded with today's real cards (test run). Reply saving tested in a browser with a fake store; access rule checked (only Darren writes).
+- Scheduled task "Luna morning briefing" created (7:40am daily, push on). It was created with NO connectors: Darren must add TaskNotes, Google Calendar and Gmail to it in claude.ai before it can read anything.
 - First real scheduled run: Mon 9 Nov, 7:40am. Check: did it run, did the page update, did the ping arrive, token use in `log/usage.md`.
 
 ## Change log

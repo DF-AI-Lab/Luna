@@ -21,6 +21,11 @@ Darren reads the result on his phone, so keep everything short.
 
 ## The run
 
+### 0. Check the tools
+You need TaskNotes, Google Calendar and Gmail tools (load with ToolSearch). If any are missing, still write
+`briefing/today` with one `do` card: title "Luna couldn't reach <app>", plan "try again tomorrow. Add the
+connector to the Luna scheduled task." Use the other apps as normal. Never make up items.
+
 ### 1. Load memory
 Read `known-facts.md` and the newest file in `log/`.
 
