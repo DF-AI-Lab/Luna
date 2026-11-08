@@ -106,9 +106,13 @@ textarea::placeholder { color: #767b9e; }
 .status { font-family: var(--ui); font-size: .85rem; font-weight: 700; color: var(--green); }
 .status.busy { color: var(--violet); font-weight: 500; }
 .status.bad { color: var(--amber); font-weight: 500; }
-.okrow { display: flex; justify-content: flex-end; margin-top: 10px; }
-.okrow[hidden] { display: none; }
-.okrow button { font-weight: 700; padding: 8px 22px; border-radius: 99px; }
+.sheet { margin-top: 10px; background: rgba(0,0,0,.22); border: 1px solid var(--line, rgba(255,255,255,.12)); border-radius: 14px; padding: 12px; }
+.sheet[hidden] { display: none; }
+.sheet p { margin: 0 0 8px; font-family: var(--ui); font-size: .8rem; opacity: .7; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button, .chips label { font-size: .85rem; padding: 8px 14px; border-radius: 99px; }
+.chips label { position: relative; overflow: hidden; display: inline-flex; align-items: center; cursor: pointer; font-family: var(--ui); font-weight: 700; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); }
+.chips input[type=date] { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
 .replyrow { display: flex; gap: 8px; justify-content: flex-end; margin-top: -4px; }
 .replyrow button { min-height: 40px; padding: 0 16px; }
 .inbox { position: relative; }
@@ -370,19 +374,31 @@ function render(brief) {
 function wire(card) {
   const id = card.dataset.id;
   const btns = el('div', 'btns');
-  ['OK', 'Done', 'Tomorrow', 'Drop'].forEach(label => {
-    const b = el('button', null, label); b.type = 'button'; b.dataset.action = label.toLowerCase();
+  const sheet = el('div', 'sheet'); sheet.hidden = true;
+  ['OK', 'Done', 'Remind ▾', 'Drop'].forEach(label => {
+    const key = label.split(' ')[0].toLowerCase();
+    const b = el('button', null, label); b.type = 'button'; b.dataset.action = key;
     b.onclick = () => {
-      if (label === 'OK') { set(id, card, { action: 'ok' }); closeCard(card, true); return; }
-      if (label === 'Done') { set(id, card, { action: 'done' }); stardust(card); return; }
-      if (label === 'Drop' || label === 'Tomorrow') { setTimeout(save, 0); }
-      const was = b.classList.contains('on');
-      btns.querySelectorAll('button').forEach(z => z.classList.remove('on'));
-      if (!was) b.classList.add('on');
-      set(id, card, { action: was ? '' : label.toLowerCase() });
+      if (key === 'remind') { sheet.hidden = !sheet.hidden; b.classList.toggle('on', !sheet.hidden); b.textContent = sheet.hidden ? 'Remind ▾' : 'Remind ▴'; return; }
+      sheet.hidden = true;
+      if (key === 'done') { set(id, card, { action: 'done' }); stardust(card); return; }
+      set(id, card, { action: key });
+      closeCard(card, true);
     };
     btns.appendChild(b);
   });
+  // Remind: pick when it comes back
+  sheet.append(el('p', null, 'Show me this again…'));
+  const chips = el('div', 'chips');
+  const plus = n => { const d = new Date(); d.setDate(d.getDate() + n); return d; };
+  const pick = d => { sheet.hidden = true; set(id, card, { action: 'remind', remindOn: iso(d) }); closeCard(card, true); };
+  [['Tomorrow', () => plus(1)], ['In 3 days', () => plus(3)], ['Next week', () => plus(7)]].forEach(([t, f]) => {
+    const c = el('button', null, t); c.type = 'button'; c.onclick = () => pick(f()); chips.append(c);
+  });
+  const lab = el('label', null, '📅 Pick a date'); const inp = document.createElement('input');
+  inp.type = 'date'; inp.min = iso(plus(1)); inp.setAttribute('aria-label', 'Pick a date');
+  inp.onchange = () => { if (inp.value) pick(new Date(inp.value + 'T12:00')); };
+  lab.append(inp); chips.append(lab); sheet.append(chips);
   const ta = el('textarea'); ta.id = 'reply-' + id; ta.placeholder = 'Reply to this card…'; ta.setAttribute('aria-label', 'Reply to this card');
   const row = el('div', 'replyrow');
   const mic = el('button', 'mic', '🎤'); mic.type = 'button'; mic.hidden = !SpeechRec; mic.setAttribute('aria-label', 'Speak your reply');
@@ -393,19 +409,17 @@ function wire(card) {
   row.append(go); row.hidden = true;
   const box = el('div', 'inbox'); box.append(ta, mic);
   const st = el('div', 'status'); st.hidden = true;
-  const okr = el('div', 'okrow'); okr.hidden = true;
-  const ok = el('button', null, 'OK ✓'); ok.type = 'button'; ok.setAttribute('aria-label', 'Close this card');
-  ok.onclick = () => closeCard(card, true);
-  okr.append(ok);
-  card.append(btns, box, row, st, okr);
+  card.append(btns, sheet, box, row, st);
 }
+function iso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function nice(isoDate) { return new Date(isoDate + 'T12:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }); }
 function set(id, card, patch) {
   answers[id] = Object.assign({ card: id, title: card.querySelector('h3').textContent }, answers[id], patch);
   if (!answers[id].action && !answers[id].reply) delete answers[id];
   const a = answers[id], st = card.querySelector('.status');
   card.classList.toggle('answered', !!(a && a.action));
   st.hidden = !a;
-  if (a) st.textContent = [a.action && ('✓ ' + a.action), a.reply && 'reply added'].filter(Boolean).join(' · ');
+  if (a) st.textContent = [a.action && ('✓ ' + a.action + (a.remindOn ? ' ' + nice(a.remindOn) : '')), a.reply && 'reply added'].filter(Boolean).join(' · ');
   update(true);
 }
 function update(changed) {
@@ -419,11 +433,9 @@ function restore(saved) {
     const card = document.querySelector('.card[data-id="' + CSS.escape(id) + '"]');
     if (!card) continue;
     if (a.reply) card.querySelector('textarea').value = a.reply;
-    if (a.action && a.action !== 'done' && a.action !== 'ok') card.querySelector('[data-action="' + a.action + '"]')?.classList.add('on');
-    set(id, card, { action: a.action || '', reply: a.reply || '' });
+        set(id, card, { action: a.action || '', reply: a.reply || '', remindOn: a.remindOn || '' });
     if (a.result) { answers[id].result = a.result; answers[id].doneNow = a.doneNow; const st = card.querySelector('.status'); st.hidden = false; st.textContent = (a.doneNow ? '✓ ' : '') + a.result; }
-    if (a.closed || a.action === 'ok') { answers[id].closed = true; closeCard(card, false); }
-    else if (a.result && a.doneNow) card.querySelector('.okrow').hidden = false;
+    if (['ok', 'remind', 'drop'].includes(a.action) || a.closed) closeCard(card, false);
     else if (a.reply && !a.result) { card.querySelector('.go').hidden = false; card.querySelector('.replyrow').hidden = false; }
   }
   const btn = document.getElementById('send');
@@ -482,14 +494,20 @@ function stardust(card) {
     };
   }, 700);
 }
-// OK: card folds away into one line, kept closed after reload
+// OK / Remind / Drop: card folds into one line with Undo, kept after reload
 function closeCard(card, animate) {
-  const id = card.dataset.id, title = card.querySelector('h3').textContent;
-  if (answers[id]) answers[id].closed = true;
+  const id = card.dataset.id, title = card.querySelector('h3').textContent, a = answers[id] || {};
+  const label = a.action === 'remind' ? '⏰ ' + title + ' · back ' + nice(a.remindOn)
+              : a.action === 'drop' ? '✕ ' + title + ' · dropped (nothing deleted)'
+              : '✓ ' + title + ' · seen';
   const fold = () => {
-    const g = el('div', 'gone'); const sp = el('span', null, '✓ ' + title);
-    const b = el('button', null, 'Show'); b.type = 'button';
-    b.onclick = () => { card.hidden = false; g.remove(); if (answers[id]) { answers[id].closed = false; if (answers[id].action === 'ok') set(id, card, { action: '' }); save(true); } };
+    const g = el('div', 'gone'); const sp = el('span', null, label);
+    const b = el('button', null, 'Undo'); b.type = 'button';
+    b.onclick = () => {
+      card.hidden = false; g.remove();
+      const rb = card.querySelector('[data-action="remind"]'); rb.classList.remove('on'); rb.textContent = 'Remind ▾';
+      set(id, card, { action: '', remindOn: '', closed: false }); save(true);
+    };
     g.append(sp, b); card.hidden = true; card.classList.remove('dusting'); card.after(g);
   };
   if (animate) { save(true); card.classList.add('dusting'); setTimeout(fold, 450); } else fold();
@@ -597,7 +615,6 @@ async function act(card, kind, text, onLine) {
     show((ok ? '✓ ' : '') + line, ok ? '' : 'bad');
     answers[id] = Object.assign({ card: id, title: c.title || '' }, answers[id], { action: kind === 'done' ? 'done' : (answers[id] && answers[id].action) || '', reply: kind === 'reply' ? text : (answers[id] && answers[id].reply) || '', result: line, doneNow: ok, at: new Date().toISOString() });
     if (ok) addDid((c.title ? c.title + ': ' : '') + line);
-    if (ok && kind === 'reply') card.querySelector('.okrow').hidden = false;
     save(true);
   } catch (e) {
     const msg = { not_granted: 'Luna needs your OK to use Claude here. Saved for the next run instead.',

@@ -106,3 +106,4 @@
 - 8 Nov 2026: V1 built and merged to main: live page, BRIEFING.md run, helper memory, usage log, 7:40am schedule
 - 8 Nov 2026: Buttons renamed to Done / Tomorrow / Drop. Done now also marks calendar events ✅ (never deleted). Moon redrawn
 - 8 Nov 2026: Instant actions from the page + 'What Luna did' box + voice button
+- 2026-11-08: Buttons now OK · Done · Remind (Tomorrow / 3 days / Next week / date) · Drop. All fold with Undo. Drop deletes nothing.
