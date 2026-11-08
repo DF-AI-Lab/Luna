@@ -74,7 +74,7 @@
 
 ## Prototypes / tests
 - Card page mock with example data: done, look agreed (`mock/cards-mock.html`)
-- Next: same page with today's real TaskNotes, Calendar, Gmail (read only, no changes)
+- Done 8 Nov: first real-data page (mock/cards-real-test.html), 12 cards from TaskNotes, Calendar, Gmail, read only
 
 ## Risks
 - Usage: 3 helpers + Opus every day could eat plan usage. Measure on the first runs.
@@ -95,3 +95,4 @@
 - 8 Nov 2026: Brain dump 2 added; card page mocked and design agreed
 - 8 Nov 2026: Locked model split, Pro-plan schedule, token log, repo layout with helper memory files (mock/structure.html)
 - 8 Nov 2026: Dropped Todoist; TaskNotes is the to-do app from now (helpers/tasknotes.md). Orbit tidy-up idea added to Later/V2
+- 8 Nov 2026: First real-data test page built (read only)
