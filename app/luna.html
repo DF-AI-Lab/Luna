@@ -290,10 +290,11 @@ setInterval(() => setSky(skyFor(new Date().getHours())), 5 * 60 * 1000);
       const a = tex[Math.min(TH - 1, lv * TH | 0) * TW + (lu * TW | 0) % TW];
       const ndl = x * Lx + z * Lz;
       const day = sm(Math.min(1, Math.max(0, (ndl + .04) / .14)));
-      const val = a * (day * (.25 + .75 * Math.max(0, ndl)) * (.75 + .25 * z) * 1.15 + .055);
-      px[o]     = Math.min(255, val * 255);
-      px[o + 1] = Math.min(255, val * 247);
-      px[o + 2] = Math.min(255, val * 228);
+      const lit = a * day * (.25 + .75 * Math.max(0, ndl)) * (.75 + .25 * z) * 1.15;
+      const glow = (1 - day) * (a * .2 + .1 * (1 - z) ** 2);   // earthshine + faint rim on the dark side
+      px[o]     = Math.min(255, lit * 255 + glow * 190);
+      px[o + 1] = Math.min(255, lit * 247 + glow * 205);
+      px[o + 2] = Math.min(255, lit * 228 + glow * 235);
       px[o + 3] = 255 * Math.min(1, (1 - Math.sqrt(r2)) * S * .5);
     }
     ctx.putImageData(img, 0, 0);
