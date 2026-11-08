@@ -49,8 +49,9 @@ body {
 .wrap { position: relative; z-index: 1; max-width: 580px; margin: 0 auto; display: flex; flex-direction: column; gap: 34px; }
 
 /* Header */
-header { display: flex; align-items: center; gap: 18px; }
-.moon { width: 80px; height: 80px; flex: none; filter: drop-shadow(0 0 24px rgba(244, 236, 210, .35)); }
+header { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 16px; row-gap: 12px; }
+header .sub { grid-column: 1 / -1; }
+.moon { width: 58px; height: 58px; flex: none; filter: drop-shadow(0 0 24px rgba(244, 236, 210, .35)); }
 .wordmark { font-family: var(--script); font-weight: 200; font-size: 3rem; letter-spacing: .5em; text-transform: uppercase; line-height: 1; margin: 0 -.5em 0 0; color: var(--moon);
   text-shadow: 0 0 28px rgba(244, 236, 210, .25); }
 .hello { font-family: var(--ui); font-weight: 500; font-size: 1rem; color: var(--fg); margin-top: 6px; }
@@ -123,7 +124,7 @@ pre { background: rgba(3, 4, 14, .55); border: 1px solid var(--edge); border-rad
 .gone span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .gone button { font-size: .8rem; padding: 5px 12px; border-radius: 99px; flex: none; }
 @media (prefers-reduced-motion: reduce) { .card.dusting { animation-duration: .01s; } }
-@media (max-width: 420px) { .wordmark { font-size: 2.3rem; } .moon { width: 62px; height: 62px; } }
+@media (max-width: 420px) { .wordmark { font-size: 2.3rem; } .moon { width: 44px; height: 44px; } }
 </style>
 
 <canvas id="stars" aria-hidden="true"></canvas>
@@ -144,20 +145,13 @@ pre { background: rgba(3, 4, 14, .55); border: 1px solid var(--edge); border-rad
         <circle cx="48" cy="72" r="3" fill="#cfc4a0" opacity=".45"/>
       </g>
     </svg>
-    <div>
-      <h1 class="wordmark">Luna</h1>
+    <h1 class="wordmark">Luna</h1>
+    <div class="sub">
       <div class="hello" id="hello">Good morning, Darren</div>
       <div class="meta"><span>Fri 6 Nov</span><span>4 cards</span><span id="phaseName"></span><span class="mockflag">Mock data</span></div>
     </div>
   </header>
 
-  <div class="skytest" role="group" aria-label="Preview time of day">
-    <span>Test sky:</span>
-    <button type="button" data-sky="night">Night</button>
-    <button type="button" data-sky="morning">Morning</button>
-    <button type="button" data-sky="afternoon">Afternoon</button>
-    <button type="button" data-sky="evening">Evening</button>
-  </div>
 
   <section class="red">
     <h2><span class="dot"></span>Do today</h2>
@@ -215,10 +209,10 @@ function setSky(name) {
   document.documentElement.dataset.sky = name;
   starLevel = SKY[name].stars;
   document.getElementById('hello').textContent = SKY[name].hello;
-  document.querySelectorAll('.skytest button').forEach(b => b.classList.toggle('on', b.dataset.sky === name));
 }
-document.querySelectorAll('.skytest button').forEach(b => b.onclick = () => setSky(b.dataset.sky));
+// Automatic: picks the sky from the clock and re-checks every 5 minutes
 setSky(skyFor(new Date().getHours()));
+setInterval(() => setSky(skyFor(new Date().getHours())), 5 * 60 * 1000);
 
 // Moving starfield: twinkle, slow drift, the odd shooting star
 (function () {
