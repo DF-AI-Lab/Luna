@@ -1,0 +1,322 @@
+<title>Luna Morning Cards</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Great+Vibes&family=Manrope:wght@500;700&display=swap">
+<style>
+/* Layout: a deep-space sky that shifts with the time of day. Script "Luna" wordmark + moon up top,
+   one column of glass cards grouped by urgency, a floating send bar. Single dark look on purpose. */
+:root {
+  color-scheme: dark;
+  /* sky (set per time of day by script) */
+  --sky-top: #03040b;
+  --sky-mid: #070a1c;
+  --sky-low: #0d1230;
+  --glow: rgba(70, 60, 160, .18);
+  --glow-pos: 85% -10%;
+  /* UI */
+  --glass: rgba(255, 255, 255, 0.04);
+  --glass-hi: rgba(255, 255, 255, 0.075);
+  --edge: rgba(190, 200, 255, 0.14);
+  --fg: #f1f2ff;
+  --muted: #a3a8c8;
+  --violet: #a99bff;
+  --violet-deep: #6c5ce7;
+  --moon: #f4ecd2;
+  --red: #ff8a80;
+  --amber: #f5c26b;
+  --green: #7fe0a8;
+  --script: "Great Vibes", "Snell Roundhand", cursive;
+  --ui: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+:root[data-sky="night"]     { --sky-top:#020309; --sky-mid:#05071a; --sky-low:#0a0d26; --glow:rgba(60,50,150,.16); --glow-pos:85% -10%; }
+:root[data-sky="morning"]   { --sky-top:#03050f; --sky-mid:#0a1130; --sky-low:#2a2350; --glow:rgba(255,170,120,.16); --glow-pos:50% 115%; }
+:root[data-sky="afternoon"] { --sky-top:#0c1a3d; --sky-mid:#16295a; --sky-low:#2b4580; --glow:rgba(150,200,255,.18); --glow-pos:80% -5%; }
+:root[data-sky="evening"]   { --sky-top:#05061a; --sky-mid:#1a1440; --sky-low:#4a2650; --glow:rgba(255,120,110,.18); --glow-pos:20% 115%; }
+* { box-sizing: border-box; }
+html { background: var(--sky-top); }
+body {
+  min-height: 100vh; margin: 0;
+  background: radial-gradient(90% 60% at var(--glow-pos), var(--glow) 0%, transparent 70%),
+              linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-low) 100%) fixed;
+  color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 140px;
+  transition: background 1s;
+}
+#stars { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.wrap { position: relative; z-index: 1; max-width: 580px; margin: 0 auto; display: flex; flex-direction: column; gap: 34px; }
+
+/* Header */
+header { display: flex; align-items: center; gap: 18px; }
+.moon { width: 80px; height: 80px; flex: none; filter: drop-shadow(0 0 24px rgba(244, 236, 210, .35)); }
+.wordmark { font-family: var(--script); font-weight: 400; font-size: 4rem; line-height: .9; margin: 0; color: var(--moon);
+  text-shadow: 0 0 28px rgba(244, 236, 210, .25); }
+.hello { font-family: var(--ui); font-weight: 500; font-size: 1rem; color: var(--fg); margin-top: 6px; }
+.meta { color: var(--muted); font-family: var(--ui); font-size: .85rem; display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 4px; }
+.mockflag { color: var(--violet); }
+
+/* Time-of-day preview (test only) */
+.skytest { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-family: var(--ui); font-size: .8rem; color: var(--muted); margin-top: -18px; }
+.skytest button { padding: 5px 10px; font-size: .78rem; border-radius: 99px; }
+
+/* Sections */
+section { display: flex; flex-direction: column; gap: 14px; }
+section h2 { font-family: var(--ui); font-weight: 700; font-size: .78rem; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--muted); margin: 0; display: flex; align-items: center; gap: 10px; }
+section h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--edge), transparent); }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.red .dot { background: var(--red); box-shadow: 0 0 12px var(--red); }
+.amber .dot { background: var(--amber); box-shadow: 0 0 12px var(--amber); }
+.green .dot { background: var(--green); box-shadow: 0 0 12px var(--green); }
+
+/* Cards */
+.card {
+  background: linear-gradient(160deg, var(--glass-hi), var(--glass));
+  border: 1px solid var(--edge); border-radius: 20px; padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 18px 40px -24px rgba(0, 0, 0, .8), inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+.card h3 { margin: 0; font-family: var(--ui); font-weight: 700; font-size: 1.12rem; line-height: 1.3; }
+.when { font-family: var(--ui); font-size: .88rem; color: var(--violet); font-variant-numeric: tabular-nums; margin-top: -8px; }
+.card ul { margin: 0; padding-left: 20px; color: var(--muted); }
+.card li + li { margin-top: 2px; }
+.plan { border-radius: 12px; padding: 11px 14px; font-size: .95rem; background: rgba(169, 155, 255, .09); border: 1px solid rgba(169, 155, 255, .16); }
+.plan b { font-family: var(--ui); color: var(--violet); }
+
+.btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+button { font: 700 .95rem var(--ui); cursor: pointer; border-radius: 12px; padding: 11px 10px;
+  border: 1px solid var(--edge); background: rgba(255, 255, 255, .03); color: var(--fg); transition: background .15s, border-color .15s; }
+button:hover { background: rgba(255, 255, 255, .08); }
+button:focus-visible, textarea:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+button.on { background: linear-gradient(135deg, var(--violet), var(--violet-deep)); border-color: transparent; color: #fff; }
+textarea { width: 100%; min-height: 46px; resize: vertical; font: inherit; padding: 11px 14px; border-radius: 12px;
+  border: 1px solid var(--edge); background: rgba(3, 4, 14, .4); color: var(--fg); }
+textarea::placeholder { color: #767b9e; }
+.status { font-family: var(--ui); font-size: .85rem; font-weight: 700; color: var(--green); }
+.card.answered { opacity: .55; }
+.card.answered .plan, .card.answered ul { display: none; }
+
+/* Send bar */
+.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+  padding: 14px max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.bar .in { max-width: 580px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: rgba(8, 10, 28, .85); border: 1px solid var(--edge); border-radius: 18px; padding: 10px 10px 10px 18px;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 20px 40px -20px rgba(0,0,0,.8); }
+#count { font-family: var(--ui); font-size: .9rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar button.send { background: linear-gradient(135deg, var(--violet), var(--violet-deep)); color: #fff; border-color: transparent; padding: 11px 20px; }
+.bar button:disabled { opacity: .4; cursor: default; }
+
+pre { background: rgba(3, 4, 14, .55); border: 1px solid var(--edge); border-radius: 16px; padding: 16px; overflow-x: auto; font-size: .8rem; color: var(--muted); }
+.sign { text-align: center; color: var(--muted); font-family: var(--ui); font-size: .95rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .card { animation: rise .5s ease both; }
+  @keyframes rise { from { transform: translateY(8px); } to { transform: none; } }
+}
+@media (max-width: 420px) { .wordmark { font-size: 3.2rem; } .moon { width: 62px; height: 62px; } }
+</style>
+
+<canvas id="stars" aria-hidden="true"></canvas>
+
+<div class="wrap">
+  <header>
+    <svg class="moon" viewBox="0 0 100 100" aria-hidden="true">
+      <defs>
+        <radialGradient id="mg" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#d9cfae"/></radialGradient>
+        <mask id="phase"><rect width="100" height="100" fill="white"/><circle id="shadow" cx="68" cy="42" r="40" fill="black"/></mask>
+      </defs>
+      <circle cx="50" cy="50" r="40" fill="#2a2655" opacity=".55"/>
+      <g mask="url(#phase)">
+        <circle cx="50" cy="50" r="40" fill="url(#mg)"/>
+        <circle cx="36" cy="40" r="6" fill="#cfc4a0" opacity=".55"/>
+        <circle cx="30" cy="62" r="4" fill="#cfc4a0" opacity=".5"/>
+        <circle cx="48" cy="72" r="3" fill="#cfc4a0" opacity=".45"/>
+      </g>
+    </svg>
+    <div>
+      <h1 class="wordmark">Luna</h1>
+      <div class="hello" id="hello">Good morning, Darren</div>
+      <div class="meta"><span>Fri 6 Nov</span><span>4 cards</span><span id="phaseName"></span><span class="mockflag">Mock data</span></div>
+    </div>
+  </header>
+
+  <div class="skytest" role="group" aria-label="Preview time of day">
+    <span>Test sky:</span>
+    <button type="button" data-sky="night">Night</button>
+    <button type="button" data-sky="morning">Morning</button>
+    <button type="button" data-sky="afternoon">Afternoon</button>
+    <button type="button" data-sky="evening">Evening</button>
+  </div>
+
+  <section class="red">
+    <h2><span class="dot"></span>Do today</h2>
+    <article class="card" data-id="spring">
+      <h3>Export from Spring Creator Dashboard</h3>
+      <div class="when">Closes today, 5pm</div>
+      <ul><li>Save anything you want to keep before it shuts</li></ul>
+      <div class="plan"><b>Luna will</b> add a Todoist reminder for 2pm</div>
+    </article>
+    <article class="card" data-id="maths">
+      <h3>Maths assessment clash</h3>
+      <div class="when">Booked Wed 11 Nov, 3pm</div>
+      <ul><li>Clashes with the dentist</li><li>You agreed 18 Nov, 3pm with Marie</li></ul>
+      <div class="plan"><b>Luna will</b> add "Email Emily to cancel 11 Nov" to today's to-do</div>
+    </article>
+  </section>
+
+  <section class="amber">
+    <h2><span class="dot"></span>Coming up</h2>
+    <article class="card" data-id="dentist">
+      <h3>Dentist not in your calendar</h3>
+      <div class="when">Wed 11 Nov · time unknown</div>
+      <div class="plan"><b>Luna will</b> add a placeholder event. Reply with the time if you know it.</div>
+    </article>
+  </section>
+
+  <section class="green">
+    <h2><span class="dot"></span>FYI · watch</h2>
+    <article class="card" data-id="york">
+      <h3>Waiting on York Learning to confirm 18 Nov</h3>
+      <div class="plan"><b>Luna will</b> watch for their reply and flag it</div>
+    </article>
+  </section>
+
+  <pre id="out" hidden></pre>
+  <p class="sign">Anything urgent later today, I'll flag it if I find it.</p>
+</div>
+
+<div class="bar"><div class="in">
+  <span id="count">0 of 4 answered</span>
+  <button class="send" id="send" type="button" disabled>Send replies</button>
+</div></div>
+
+<script>
+// Sky: time of day
+const SKY = {
+  night:     { stars: 1.0, hello: 'Evening, Darren' },
+  morning:   { stars: 0.75, hello: 'Good morning, Darren' },
+  afternoon: { stars: 0.25, hello: 'Good afternoon, Darren' },
+  evening:   { stars: 0.6, hello: 'Good evening, Darren' },
+};
+let starLevel = 1;
+function skyFor(h) { return h < 5 ? 'night' : h < 12 ? 'morning' : h < 17 ? 'afternoon' : h < 21 ? 'evening' : 'night'; }
+function setSky(name) {
+  document.documentElement.dataset.sky = name;
+  starLevel = SKY[name].stars;
+  document.getElementById('hello').textContent = SKY[name].hello;
+  document.querySelectorAll('.skytest button').forEach(b => b.classList.toggle('on', b.dataset.sky === name));
+}
+document.querySelectorAll('.skytest button').forEach(b => b.onclick = () => setSky(b.dataset.sky));
+setSky(skyFor(new Date().getHours()));
+
+// Moving starfield: twinkle, slow drift, the odd shooting star
+(function () {
+  const c = document.getElementById('stars'), x = c.getContext('2d');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W, H, d, stars = [], shoot = null, level = starLevel;
+  function build() {
+    d = window.devicePixelRatio || 1;
+    W = c.width = innerWidth * d; H = c.height = innerHeight * d;
+    const n = Math.round(innerWidth * innerHeight / 5000);
+    stars = Array.from({ length: n }, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      r: (0.25 + Math.random() ** 3 * 1.4) * d,
+      a: 0.2 + Math.random() * 0.7,
+      tw: 0.4 + Math.random() * 1.6, ph: Math.random() * 6.28,
+      z: 0.2 + Math.random() * 0.8,
+      tint: Math.random() > 0.88 ? '#cdd6ff' : Math.random() > 0.94 ? '#ffe2c4' : '#ffffff',
+    }));
+  }
+  function frame(t) {
+    level += (starLevel - level) * 0.04;
+    x.clearRect(0, 0, W, H);
+    const s = t / 1000;
+    for (const p of stars) {
+      if (!still) { p.x -= 0.035 * p.z * d; if (p.x < -2) p.x = W + 2; }
+      const tw = still ? 1 : 0.65 + 0.35 * Math.sin(s * p.tw + p.ph);
+      x.globalAlpha = p.a * tw * level;
+      x.fillStyle = p.tint;
+      x.beginPath(); x.arc(p.x, p.y, p.r, 0, 6.283); x.fill();
+    }
+    if (!still) {
+      if (!shoot && Math.random() < 0.0025 * level) {
+        shoot = { x: Math.random() * W * 0.8 + W * 0.2, y: Math.random() * H * 0.35, life: 0 };
+      }
+      if (shoot) {
+        shoot.life += 1;
+        const k = shoot.life / 60, len = 120 * d;
+        const hx = shoot.x - k * 420 * d, hy = shoot.y + k * 180 * d;
+        const g = x.createLinearGradient(hx, hy, hx + len, hy - len * 0.43);
+        g.addColorStop(0, 'rgba(255,255,255,.9)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+        x.globalAlpha = Math.sin(Math.PI * k) * level;
+        x.strokeStyle = g; x.lineWidth = 1.4 * d;
+        x.beginPath(); x.moveTo(hx, hy); x.lineTo(hx + len, hy - len * 0.43); x.stroke();
+        if (shoot.life >= 60) shoot = null;
+      }
+      requestAnimationFrame(frame);
+    }
+  }
+  build(); addEventListener('resize', () => { build(); if (still) frame(0); });
+  requestAnimationFrame(frame);
+})();
+
+// Moon phase for the briefing date
+(function () {
+  const date = new Date('2026-11-06T08:00:00Z');
+  const ref = Date.UTC(2000, 0, 6, 18, 14);        // known new moon
+  const age = (((date - ref) / 86400000) % 29.530589 + 29.530589) % 29.530589;
+  const f = age / 29.530589;                         // 0 new, .5 full
+  const names = ['New moon', 'Waxing crescent', 'First quarter', 'Waxing gibbous', 'Full moon', 'Waning gibbous', 'Last quarter', 'Waning crescent'];
+  document.getElementById('phaseName').textContent = names[Math.round(f * 8) % 8];
+  // shift the shadow circle: waxing lights the right side, waning the left
+  const lit = 1 - Math.abs(1 - 2 * f);               // 0..1
+  const off = 80 * lit * (f < .5 ? -1 : 1);
+  const sh = document.getElementById('shadow');
+  sh.setAttribute('cx', 50 + off); sh.setAttribute('cy', 50);
+  if (lit > 0.97) sh.setAttribute('r', 0);
+})();
+
+// Cards
+const total = document.querySelectorAll('.card').length;
+const answers = {};
+document.querySelectorAll('.card').forEach(card => {
+  const id = card.dataset.id;
+  const btns = document.createElement('div');
+  btns.className = 'btns';
+  ['Done', 'Later', 'Skip'].forEach(label => {
+    const b = document.createElement('button');
+    b.textContent = label; b.type = 'button';
+    b.onclick = () => {
+      const was = b.classList.contains('on');
+      btns.querySelectorAll('button').forEach(z => z.classList.remove('on'));
+      if (!was) b.classList.add('on');
+      set(id, card, { action: was ? '' : label.toLowerCase() });
+    };
+    btns.appendChild(b);
+  });
+  const ta = document.createElement('textarea');
+  ta.id = 'reply-' + id; ta.placeholder = 'Reply to this card…'; ta.setAttribute('aria-label', 'Reply to this card');
+  ta.oninput = () => set(id, card, { reply: ta.value.trim() });
+  const st = document.createElement('div'); st.className = 'status'; st.hidden = true;
+  card.append(btns, ta, st);
+});
+function set(id, card, patch) {
+  answers[id] = Object.assign({ card: card.querySelector('h3').textContent }, answers[id], patch);
+  if (!answers[id].action && !answers[id].reply) delete answers[id];
+  const a = answers[id], st = card.querySelector('.status');
+  card.classList.toggle('answered', !!(a && a.action));
+  st.hidden = !a;
+  if (a) st.textContent = [a.action && ('✓ ' + a.action), a.reply && 'reply added'].filter(Boolean).join(' · ');
+  const n = Object.keys(answers).length;
+  document.getElementById('count').textContent = n + ' of ' + total + ' answered';
+  document.getElementById('send').disabled = n === 0;
+}
+document.getElementById('send').onclick = () => {
+  const out = document.getElementById('out');
+  out.hidden = false;
+  out.textContent = 'Mock only. This is what Luna would save to log/:\n\n' + JSON.stringify(Object.values(answers), null, 2);
+  out.scrollIntoView({ behavior: 'smooth' });
+};
+</script>
