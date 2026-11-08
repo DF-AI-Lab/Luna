@@ -1,5 +1,11 @@
 # TaskNotes helper
 
+## Memory
+- Read `helpers/tasknotes-memory.md` first. Report only what is NEW or CHANGED since then; say "nothing new" otherwise.
+- At the end, hand back your updated memory (max 30 lines) for Opus to save.
+- Checking is read only. Only change things when Opus sends you to act on Darren's reply.
+
+
 TaskNotes is Darren's own to-do app (connected as the TaskNotes tools).
 
 ## Look

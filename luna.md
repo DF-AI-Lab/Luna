@@ -1,9 +1,9 @@
 # Luna (morning briefing agent)
 
 ## Where we are
-- Current step: 1. Idea (brain dump done, card page look mocked and agreed, not grilled yet)
-- Last session (8 Nov 2026): second brain dump; card page mocked and styled (branch `card-page-mock`, `mock/`)
-- Next action: first real-data test page (read only), then grill Step 1
+- Current step: Build & Test (Darren said "build all of it"; Step 1 grill skipped for now, parked)
+- Last session (8 Nov 2026): built V1 end to end: live page, run instructions, helper memory, 7:40am schedule. Merged to `main`.
+- Next action: Darren checks the first real 7:40am run (Mon 9 Nov), then recap and tweak
 
 ## Principles / constraints
 - Easy to read: cards, not a wall of text (Darren has ADHD)
@@ -62,6 +62,9 @@
 | 8 | Each run logs rough token use to `log/usage.md` | Check it fits Pro after a week of testing | 8 Nov 2026 |
 | 9 | All .md files live in the GitHub repo; each helper gets a `-memory.md` of its last report | Phone-only, nothing on the PC; helpers say "nothing new" instead of repeating | 8 Nov 2026 |
 | 10 | Page is opened from a phone home-screen shortcut to one fixed artifact link | Same link every day | 8 Nov 2026 |
+| 11 | Live page `app/luna.html` reads cards from its own database (`briefing/today`) and saves replies to `replies/<date>`; only Darren can write | Same link daily, no Claude usage when Darren taps | 8 Nov 2026 |
+| 12 | Schedule: daily 7:40am Europe/London, fresh cloud session, push ping when done | Page ready before 8am | 8 Nov 2026 |
+| 13 | Replies are acted on at the next run; emails are drafts only, never sent; nothing deleted | Safe by default | 8 Nov 2026 |
 
 ## Link to Orbit (app-assistant repo)
 - Luna = the shop. Orbit = the school. `log/` = the receipts.
@@ -89,6 +92,8 @@
 ## Tickets
 
 ## Build / test progress
+- 8 Nov: V1 built. Live page https://claude.ai/artifact/K9WPKsdLQLMoMyb6iCPm5C seeded with today's real cards (test run). Reply saving tested in a browser with a fake store; access rule checked (only Darren writes).
+- First real scheduled run: Mon 9 Nov, 7:40am. Check: did it run, did the page update, did the ping arrive, token use in `log/usage.md`.
 
 ## Change log
 - 8 Nov 2026: Project file created; idea moved here from app-assistant
@@ -96,3 +101,4 @@
 - 8 Nov 2026: Locked model split, Pro-plan schedule, token log, repo layout with helper memory files (mock/structure.html)
 - 8 Nov 2026: Dropped Todoist; TaskNotes is the to-do app from now (helpers/tasknotes.md). Orbit tidy-up idea added to Later/V2
 - 8 Nov 2026: First real-data test page built (read only)
+- 8 Nov 2026: V1 built and merged to main: live page, BRIEFING.md run, helper memory, usage log, 7:40am schedule
