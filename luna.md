@@ -57,6 +57,11 @@
 | 3 | Card replies saved to `log/` as message → app | Free real training data for Orbit | 8 Nov 2026 |
 | 4 | Mock the card page before grilling | See it first, then test with real data | 8 Nov 2026 |
 | 5 | Card page look: see "Card page design" | Picked by Darren from mocks | 8 Nov 2026 |
+| 6 | Opus runs it; Haiku for Todoist + Calendar helpers, Sonnet for Gmail and for doing actions | Save usage where data is neat, judgement where it is messy | 8 Nov 2026 |
+| 7 | Runs as a Claude Code scheduled task on the Pro plan, no API | Darren wants it on his own usage | 8 Nov 2026 |
+| 8 | Each run logs rough token use to `log/usage.md` | Check it fits Pro after a week of testing | 8 Nov 2026 |
+| 9 | All .md files live in the GitHub repo; each helper gets a `-memory.md` of its last report | Phone-only, nothing on the PC; helpers say "nothing new" instead of repeating | 8 Nov 2026 |
+| 10 | Page is opened from a phone home-screen shortcut to one fixed artifact link | Same link every day | 8 Nov 2026 |
 
 ## Link to Orbit (app-assistant repo)
 - Luna = the shop. Orbit = the school. `log/` = the receipts.
@@ -88,3 +93,4 @@
 ## Change log
 - 8 Nov 2026: Project file created; idea moved here from app-assistant
 - 8 Nov 2026: Brain dump 2 added; card page mocked and design agreed
+- 8 Nov 2026: Locked model split, Pro-plan schedule, token log, repo layout with helper memory files (mock/structure.html)
