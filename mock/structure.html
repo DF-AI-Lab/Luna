@@ -39,6 +39,7 @@ h1 { font-family: var(--logo); font-weight: 200; text-transform: uppercase; lett
 .boss span, .helper span { font-size: .78rem; color: var(--muted); }
 .helper { border: 1px solid var(--edge); border-radius: 12px; padding: 8px; text-align: center; font-size: .85rem; min-width: 0; }
 .tag { display: inline-block; font-size: .7rem; border-radius: 6px; padding: 1px 6px; margin-top: 4px; background: rgba(143,196,255,.12); color: var(--sky); }
+.helper .files { display: block; margin-top: 6px; font-family: var(--mono); font-size: .66rem; line-height: 1.5; color: var(--muted); overflow-wrap: anywhere; }
 .tag.s { background: rgba(169,155,255,.14); color: var(--violet); }
 
 .arrow { text-align: center; color: var(--muted); font-size: .82rem; display: flex; flex-direction: column; align-items: center; gap: 2px; }
@@ -79,11 +80,11 @@ ol.steps li::marker { color: var(--violet); font-weight: 700; }
 
   <section class="place cloud">
     <header><h2>Claude cloud</h2><span class="chip">The worker · your Pro usage</span></header>
-    <div class="boss"><b>Opus</b><span>reads BRIEFING + known-facts, runs it all</span></div>
+    <div class="boss"><b>Opus</b><span>reads BRIEFING.md (its job) + known-facts.md (the big picture)</span></div>
     <div class="team">
-      <div class="helper"><b>Todoist</b><span class="tag">Haiku</span></div>
-      <div class="helper"><b>Calendar</b><span class="tag">Haiku</span></div>
-      <div class="helper"><b>Gmail</b><span class="tag s">Sonnet</span></div>
+      <div class="helper"><b>Todoist</b><span class="tag">Haiku</span><span class="files">todoist.md<br>todoist-memory.md</span></div>
+      <div class="helper"><b>Calendar</b><span class="tag">Haiku</span><span class="files">calendar.md<br>calendar-memory.md</span></div>
+      <div class="helper"><b>Gmail</b><span class="tag s">Sonnet</span><span class="files">email.md<br>email-memory.md</span></div>
     </div>
     <ol class="steps">
       <li>Read yesterday's replies and do what you said yes to</li>
