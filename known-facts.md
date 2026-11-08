@@ -14,3 +14,4 @@ Luna skips these unless they change. Remove a line once it's fully done and in t
 ## Ignore
 - LinkedIn job alerts, FunderPro, eBay, Sky and other promo emails
 - Todoist daily emails (Luna uses TaskNotes now)
+- Maths assessment: DONE 8 Nov (TaskNotes ticked, calendar reminder marked ✅)

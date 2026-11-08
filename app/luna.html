@@ -59,6 +59,11 @@ header { position: relative; border: 1px solid var(--edge); border-radius: 22px;
 .hello { font-family: var(--ui); font-weight: 500; font-size: 1.05rem; color: var(--fg); }
 .meta { color: var(--muted); font-family: var(--ui); font-size: .85rem; display: flex; flex-wrap: wrap; gap: 2px 12px; }
 .mockflag { color: var(--violet); }
+.did { border: 1px solid rgba(127,224,168,.28); background: rgba(127,224,168,.06); border-radius: 18px; padding: 14px 18px; }
+.did h2 { margin: 0 0 6px; }
+.did .dot { background: #7fe0a8; }
+.did ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; color: var(--fg); font-size: .92rem; }
+.did li::marker { content: "✓  "; color: #7fe0a8; }
 .empty { color: var(--muted); text-align: center; padding: 40px 12px; margin: 0; }
 .saved { color: var(--green); font-size: .9rem; text-align: center; margin: 0; }
 
@@ -322,6 +327,12 @@ function render(brief) {
   const cards = Array.isArray(brief.cards) ? brief.cards : [];
   total = cards.length;
   document.getElementById('cardCount').textContent = total + (total === 1 ? ' card' : ' cards');
+  if (Array.isArray(brief.did) && brief.did.length) {
+    const box = el('section', 'did'), h = el('h2');
+    h.append(el('span', 'dot'), 'What Luna did'); box.appendChild(h);
+    const ul = el('ul'); brief.did.forEach(t => ul.appendChild(el('li', null, t))); box.appendChild(ul);
+    board.appendChild(box);
+  }
   for (const [key, colour, label] of SECTIONS) {
     const list = cards.filter(c => c.section === key);
     if (!list.length) continue;

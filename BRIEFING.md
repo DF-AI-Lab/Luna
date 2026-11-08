@@ -39,6 +39,7 @@ Read `known-facts.md` and the newest file in `log/`.
   - **tomorrow** (old name: later): bring the card back tomorrow, or on the day he names in his reply.
   - **drop** (old name: skip): drop it and add it to known-facts so it doesn't come back.
   - **reply text**: do what it says (add/edit a task, add/update a calendar event, draft an email). Use a Sonnet helper for the doing.
+- Keep a plain list of everything you actually changed, one short line each, saying where. E.g. "Maths assessment: ticked off in TaskNotes, calendar reminder marked ✅ done". Only things that really happened. This goes in `did` (step 5).
 - Log every answer to `log/<date>.jsonl` (format in `log/README.md`).
 - No replies? That's fine, carry the cards forward if they still matter.
 
@@ -68,6 +69,7 @@ Write `briefing/today` with ArtifactData `set` (pin `if_version` to the version 
 ```json
 {
   "date": "2026-11-09", "dateLabel": "Mon 9 Nov", "builtAt": "<ISO time>",
+  "did": ["what you changed since last run, one line each (from step 2); [] if nothing"],
   "cards": [
     {"id": "short-slug", "section": "do|soon|fyi", "title": "Short title",
      "when": "Tue 10 Nov · 5:30pm", "lines": ["1 to 3 tiny lines"], "plan": "what you will do (starts after 'Luna will')"}
@@ -75,6 +77,7 @@ Write `briefing/today` with ArtifactData `set` (pin `if_version` to the version 
 }
 ```
 
+- `did` shows at the top as "What Luna did". Cards you acted on (Done, Drop) don't come back as cards.
 - `do` = today, `soon` = next 7 days, `fyi` = no action yet. Most important first.
 - One card = one thing. Never the same thing in two sections.
 - `id`s stay the same for the same thing across days.
