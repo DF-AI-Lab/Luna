@@ -5,12 +5,12 @@ Act as Darren's personal assistant. Build a short, action-focused briefing at 8a
 ## Steps
 1. Read `known-facts.md` and yesterday's card replies (if any). Act on replies first.
 2. Send out the helpers, each with its rules file:
-   - `helpers/todoist.md`
+   - `helpers/tasknotes.md`
    - `helpers/calendar.md`
    - `helpers/email.md`
 3. Merge what they bring back into ONE picture. Think: "What does Darren actually need to know or do today?"
 4. Skip anything already in `known-facts.md` unless it changed.
-5. New things that belong in Todoist or Calendar: tell the right helper to add them. Never delete or make big
+5. New things that belong in TaskNotes or Calendar: tell the right helper to add them. Never delete or make big
    changes without asking.
 6. Build the card page (see Cards below).
 7. Update `known-facts.md`. Write each card reply to `log/` (format in `log/README.md`).

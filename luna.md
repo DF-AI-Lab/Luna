@@ -19,8 +19,8 @@
 - Success looks like: Darren glances, taps or replies on a card, and things get added or sorted without a long chat
 - Assumptions: an Artifact page can save replies (shared database) and Luna can read them next run
 - Missing info: does Darren want a phone ping when the page is ready? Keep the email as well, or stop it?
-- In scope: Todoist, Google Calendar, Gmail. Merge, skip known stuff, add new things, card page, save replies.
-- Out of scope (for now): TaskNotes, tidy-up agent, cleaning up the earlier Orbit agents attempt
+- In scope: TaskNotes, Google Calendar, Gmail. Merge, skip known stuff, add new things, card page, save replies.
+- Out of scope (for now): Todoist (dropped), tidy-up agent, cleaning up the earlier Orbit agents attempt
 
 - Extra from brain dump 2: the schedule itself knows nothing, it just points Opus at the `.md`. Each helper could keep its own memory of what it last reported. Reply per card ("yep, do that") so everything gets done in one go.
 
@@ -38,7 +38,7 @@
 2. Opus reads `BRIEFING.md`
 3. Opus sends 3 small helpers out, each with its own rules file in `helpers/`
 4. Helpers report back what they found
-5. Opus merges: already in `known-facts.md` → skip; new → tells a helper to add it (Todoist task / Calendar event)
+5. Opus merges: already in `known-facts.md` → skip; new → tells a helper to add it (TaskNotes task / Calendar event)
 6. Opus builds the card page: 🔴 Do today / 🟡 Coming up / 🟢 FYI
 7. Darren taps / replies on cards
 8. Next run (or when asked): Opus reads replies, acts, updates `known-facts.md`, writes each reply to `log/`
@@ -53,11 +53,11 @@
 | # | Decision | Why | Date |
 |---|----------|-----|------|
 | 1 | Own repo, named `luna` | Separate from Orbit, linked only by the log | 8 Nov 2026 |
-| 2 | Start with Todoist, Calendar, Gmail | What the current briefing already uses | 8 Nov 2026 |
+| 2 | Start with TaskNotes, Calendar, Gmail (Todoist dropped) | TaskNotes is Darren's own app and already connected; no throwaway Todoist helper | 8 Nov 2026 |
 | 3 | Card replies saved to `log/` as message → app | Free real training data for Orbit | 8 Nov 2026 |
 | 4 | Mock the card page before grilling | See it first, then test with real data | 8 Nov 2026 |
 | 5 | Card page look: see "Card page design" | Picked by Darren from mocks | 8 Nov 2026 |
-| 6 | Opus runs it; Haiku for Todoist + Calendar helpers, Sonnet for Gmail and for doing actions | Save usage where data is neat, judgement where it is messy | 8 Nov 2026 |
+| 6 | Opus runs it; Haiku for TaskNotes + Calendar helpers, Sonnet for Gmail and for doing actions | Save usage where data is neat, judgement where it is messy | 8 Nov 2026 |
 | 7 | Runs as a Claude Code scheduled task on the Pro plan, no API | Darren wants it on his own usage | 8 Nov 2026 |
 | 8 | Each run logs rough token use to `log/usage.md` | Check it fits Pro after a week of testing | 8 Nov 2026 |
 | 9 | All .md files live in the GitHub repo; each helper gets a `-memory.md` of its last report | Phone-only, nothing on the PC; helpers say "nothing new" instead of repeating | 8 Nov 2026 |
@@ -74,13 +74,13 @@
 
 ## Prototypes / tests
 - Card page mock with example data: done, look agreed (`mock/cards-mock.html`)
-- Next: same page with today's real Todoist, Calendar, Gmail (read only, no changes)
+- Next: same page with today's real TaskNotes, Calendar, Gmail (read only, no changes)
 
 ## Risks
 - Usage: 3 helpers + Opus every day could eat plan usage. Measure on the first runs.
 
 ## Later / V2
-- TaskNotes helper + tidy-up agent (dates, duplicates, old tasks)
+- Orbit → TaskNotes tidy-up: Orbit drops tasks in cheaply and keeps a raw copy of what Darren asked; each morning a Haiku helper compares the two and fixes or neatens the TaskNotes item. Also dates, duplicates, old tasks
 - Save Darren's requests so Luna learns how he likes things
 - Clean up the earlier Orbit agents attempt
 
@@ -94,3 +94,4 @@
 - 8 Nov 2026: Project file created; idea moved here from app-assistant
 - 8 Nov 2026: Brain dump 2 added; card page mocked and design agreed
 - 8 Nov 2026: Locked model split, Pro-plan schedule, token log, repo layout with helper memory files (mock/structure.html)
+- 8 Nov 2026: Dropped Todoist; TaskNotes is the to-do app from now (helpers/tasknotes.md). Orbit tidy-up idea added to Later/V2
