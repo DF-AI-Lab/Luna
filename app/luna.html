@@ -107,8 +107,11 @@ textarea::placeholder { color: #767b9e; }
 .status.bad { color: var(--amber); font-weight: 500; }
 .replyrow { display: flex; gap: 8px; justify-content: flex-end; margin-top: -4px; }
 .replyrow button { min-height: 40px; padding: 0 16px; }
-.replyrow .mic.live { background: rgba(255,120,120,.18); border-color: rgba(255,120,120,.5); }
-.replyrow .go[hidden], .replyrow .mic[hidden] { display: none; }
+.inbox { position: relative; }
+.inbox textarea { padding-right: 52px; display: block; }
+.mic { position: absolute; right: 16px; bottom: 9px; width: 36px; height: 36px; min-height: 0; padding: 0; border-radius: 50%; font-size: 1rem; line-height: 1; display: grid; place-items: center; }
+.mic.live { background: rgba(255,120,120,.22); border-color: rgba(255,120,120,.55); }
+.mic[hidden], .replyrow[hidden] { display: none; }
 .card.answered { opacity: .55; }
 .card.answered .plan, .card.answered ul { display: none; }
 
@@ -377,14 +380,15 @@ function wire(card) {
   });
   const ta = el('textarea'); ta.id = 'reply-' + id; ta.placeholder = 'Reply to this card…'; ta.setAttribute('aria-label', 'Reply to this card');
   const row = el('div', 'replyrow');
-  const mic = el('button', 'mic', '🎤 Speak'); mic.type = 'button'; mic.hidden = !SpeechRec;
+  const mic = el('button', 'mic', '🎤'); mic.type = 'button'; mic.hidden = !SpeechRec; mic.setAttribute('aria-label', 'Speak your reply');
   const go = el('button', 'go', 'Do it now ➤'); go.type = 'button'; go.hidden = true;
-  ta.oninput = () => { set(id, card, { reply: ta.value.trim() }); go.hidden = !ta.value.trim(); };
+  ta.oninput = () => { set(id, card, { reply: ta.value.trim() }); go.hidden = row.hidden = !ta.value.trim(); };
   mic.onclick = () => listen(ta, mic);
   go.onclick = () => { const txt = ta.value.trim(); if (!txt) return; go.hidden = true; act(card, 'reply', txt); };
-  row.append(mic, go);
+  row.append(go); row.hidden = true;
+  const box = el('div', 'inbox'); box.append(ta, mic);
   const st = el('div', 'status'); st.hidden = true;
-  card.append(btns, ta, row, st);
+  card.append(btns, box, row, st);
 }
 function set(id, card, patch) {
   answers[id] = Object.assign({ card: id, title: card.querySelector('h3').textContent }, answers[id], patch);
@@ -409,7 +413,7 @@ function restore(saved) {
     if (a.action && a.action !== 'done') card.querySelector('[data-action="' + a.action + '"]')?.classList.add('on');
     set(id, card, { action: a.action || '', reply: a.reply || '' });
     if (a.result) { answers[id].result = a.result; answers[id].doneNow = a.doneNow; const st = card.querySelector('.status'); st.hidden = false; st.textContent = (a.doneNow ? '✓ ' : '') + a.result; }
-    else if (a.reply) card.querySelector('.go').hidden = false;
+    else if (a.reply) { card.querySelector('.go').hidden = false; card.querySelector('.replyrow').hidden = false; }
   }
   const btn = document.getElementById('send');
   if (Object.keys(saved || {}).length) { btn.textContent = 'Saved ✓'; }
@@ -511,8 +515,8 @@ function listen(ta, mic) {
       st.textContent = "Voice isn't allowed in here. Use the 🎤 on your phone keyboard instead.";
     }
   };
-  rec.onend = () => { rec = null; mic.classList.remove('live'); mic.textContent = '🎤 Speak'; };
-  mic.classList.add('live'); mic.textContent = '■ Stop';
+  rec.onend = () => { rec = null; mic.classList.remove('live'); mic.textContent = '🎤'; };
+  mic.classList.add('live'); mic.textContent = '■';
   rec.start();
 }
 
