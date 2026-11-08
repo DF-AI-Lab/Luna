@@ -30,7 +30,7 @@
 - Sky changes by itself with the time of day (night / morning / afternoon / evening)
 - Header: glass banner (option 4). LUNA in thin, wide-spaced caps (Josefin Sans 200). Realistic moon on the right showing the real phase
 - Cards: glass, grouped Do today / Coming up / FYI. Each card has a "Luna will…" line so Done = yes, go ahead
-- Done / Later / Skip + reply box on each card. Done = card bursts into stardust, with Undo
+- Done / Tomorrow / Drop + reply box on each card. Done = card bursts into stardust, with Undo
 - Must fit a Z Fold 8 cover screen (narrow)
 
 ## 2. Steps (rough, not grilled)
@@ -103,3 +103,4 @@
 - 8 Nov 2026: Dropped Todoist; TaskNotes is the to-do app from now (helpers/tasknotes.md). Orbit tidy-up idea added to Later/V2
 - 8 Nov 2026: First real-data test page built (read only)
 - 8 Nov 2026: V1 built and merged to main: live page, BRIEFING.md run, helper memory, usage log, 7:40am schedule
+- 8 Nov 2026: Buttons renamed to Done / Tomorrow / Drop. Done now also marks calendar events ✅ (never deleted). Moon redrawn

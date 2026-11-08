@@ -344,7 +344,7 @@ function render(brief) {
 function wire(card) {
   const id = card.dataset.id;
   const btns = el('div', 'btns');
-  ['Done', 'Later', 'Skip'].forEach(label => {
+  ['Done', 'Tomorrow', 'Drop'].forEach(label => {
     const b = el('button', null, label); b.type = 'button'; b.dataset.action = label.toLowerCase();
     b.onclick = () => {
       if (label === 'Done') { set(id, card, { action: 'done' }); stardust(card); return; }

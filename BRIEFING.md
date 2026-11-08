@@ -36,8 +36,8 @@ Read `known-facts.md` and the newest file in `log/`.
     - **TaskNotes**: `complete_task` on the matching task.
     - **Calendar**: never delete. Keep the event as a record: add `✅ ` to the start of its title and add `Done <date> (via Luna)` to its description (`update_event`). Do this for every matching event (e.g. both a booking and a reminder).
     - Otherwise note it in known-facts. For an email card, Done means "I've handled it".
-  - **later**: bring the card back tomorrow or on the day he names.
-  - **skip**: drop it and add it to known-facts so it doesn't come back.
+  - **tomorrow** (old name: later): bring the card back tomorrow, or on the day he names in his reply.
+  - **drop** (old name: skip): drop it and add it to known-facts so it doesn't come back.
   - **reply text**: do what it says (add/edit a task, add/update a calendar event, draft an email). Use a Sonnet helper for the doing.
 - Log every answer to `log/<date>.jsonl` (format in `log/README.md`).
 - No replies? That's fine, carry the cards forward if they still matter.
@@ -60,7 +60,7 @@ Each helper also returns its updated memory text (max 30 lines). Helpers only re
 - Waiting on someone = FYI, not a task.
 - Flag clashes and mismatches (e.g. two different due dates for the same thing).
 - New thing that belongs in TaskNotes or Calendar (e.g. an appointment found in an email): add it with a Sonnet helper,
-  then say so on the card ("Added to calendar"). Darren can Skip to undo next run.
+  then say so on the card ("Added to calendar"). Darren can tap Drop to undo next run.
 
 ### 5. Build the cards
 Write `briefing/today` with ArtifactData `set` (pin `if_version` to the version you read in step 2):
