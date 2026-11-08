@@ -1,0 +1,188 @@
+<title>Luna Header Picker</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@200;300&family=Manrope:wght@400;500;700&display=swap">
+<style>
+/* Layout: five header options stacked, each shown inside its own slice of the night sky. */
+:root {
+  color-scheme: dark;
+  --sky-top: #03050f; --sky-mid: #0a1130; --sky-low: #1d1d45;
+  --edge: rgba(190,200,255,.14); --glass: rgba(255,255,255,.045);
+  --fg: #f1f2ff; --muted: #a3a8c8; --violet: #a99bff; --moon: #f4ecd2;
+  --logo: "Josefin Sans", "Segoe UI", system-ui, sans-serif;
+  --ui: "Manrope", "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--sky-top); }
+body { margin: 0; min-height: 100vh; color: var(--fg); font-family: var(--ui);
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-mid) 60%, var(--sky-low)) fixed;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 60px; }
+#stars { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.wrap { position: relative; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 34px; }
+.top h1 { font-size: 1.4rem; margin: 0; }
+.top p { color: var(--muted); margin: 6px 0 0; }
+.opt { display: flex; flex-direction: column; gap: 10px; }
+.opt .tag { font-weight: 700; font-size: .85rem; color: var(--violet); }
+.opt .tag span { color: var(--muted); font-weight: 500; }
+.frame { border: 1px dashed var(--edge); border-radius: 20px; padding: 26px 20px; overflow: hidden; position: relative; }
+
+.logo { font-family: var(--logo); font-weight: 200; text-transform: uppercase; color: var(--moon); letter-spacing: .5em; margin-right: -.5em; line-height: 1; }
+.hello { font-weight: 500; font-size: 1.05rem; }
+.meta { color: var(--muted); font-size: .85rem; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.moon { display: block; filter: drop-shadow(0 0 22px rgba(244,236,210,.35)); }
+.pill { border: 1px solid var(--edge); background: var(--glass); border-radius: 99px; padding: 4px 11px; font-size: .8rem; color: var(--muted); }
+
+/* 1 · Centered */
+.h1 { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+.h1 .moon { width: 70px; height: 70px; }
+.h1 .logo { font-size: 2.4rem; }
+.h1 .meta { justify-content: center; }
+
+/* 2 · Moon behind */
+.h2 { position: relative; min-height: 190px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 10px; }
+.h2 .moon { position: absolute; width: 190px; height: 190px; top: 50%; left: 50%; transform: translate(-50%, -58%); opacity: .55; }
+.h2 .logo, .h2 .hello, .h2 .meta { position: relative; }
+.h2 .logo { font-size: 3rem; text-shadow: 0 0 20px rgba(3,5,15,.8); }
+.h2 .meta { justify-content: center; }
+
+/* 3 · Top bar + big greeting */
+.h3 { display: flex; flex-direction: column; gap: 22px; }
+.h3 .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.h3 .brand { display: flex; align-items: center; gap: 10px; }
+.h3 .brand .moon { width: 28px; height: 28px; }
+.h3 .brand .logo { font-size: 1.1rem; font-weight: 300; }
+.h3 .big { font-size: 2rem; font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+.h3 .big b { font-weight: 700; }
+
+/* 4 · Glass banner, moon on the right */
+.h4 { position: relative; border: 1px solid var(--edge); background: linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+  border-radius: 22px; padding: 22px; padding-right: 130px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; min-height: 150px; justify-content: center; }
+.h4 .moon { position: absolute; right: -30px; top: 50%; transform: translateY(-50%); width: 150px; height: 150px; }
+.h4 .logo { font-size: 1.6rem; margin-bottom: 6px; }
+
+/* 5 · Date-led */
+.h5 { display: flex; flex-direction: column; gap: 14px; }
+.h5 .bar { display: flex; align-items: center; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid var(--edge); }
+.h5 .bar .moon { width: 22px; height: 22px; }
+.h5 .bar .logo { font-size: .95rem; font-weight: 300; }
+.h5 .day { font-family: var(--logo); font-weight: 200; font-size: 3.2rem; line-height: 1; margin: 0; letter-spacing: .02em; }
+.h5 .date { color: var(--moon); font-size: 1rem; letter-spacing: .25em; text-transform: uppercase; }
+.h5 .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+.reply { border: 1px solid var(--edge); background: var(--glass); border-radius: 18px; padding: 18px; }
+.reply p { margin: 0; } .reply p + p { margin-top: 6px; color: var(--muted); font-size: .92rem; }
+@media (max-width: 440px) {
+  .h2 .logo { font-size: 2.2rem; } .h4 { padding-right: 100px; } .h4 .moon { width: 120px; height: 120px; }
+  .h3 .big { font-size: 1.6rem; } .h5 .day { font-size: 2.5rem; }
+}
+</style>
+
+<canvas id="stars" aria-hidden="true"></canvas>
+
+<div class="wrap">
+  <div class="top">
+    <h1>Pick a header</h1>
+    <p>Same pieces, five layouts. Tell me the number.</p>
+  </div>
+
+  <div class="opt"><div class="tag">1 · Centered <span>moon on top, everything stacked</span></div>
+    <div class="frame"><div class="h1">
+      <svg class="moon" data-moon></svg>
+      <div class="logo">Luna</div>
+      <div class="hello">Good morning, Darren</div>
+      <div class="meta"><span>Fri 6 Nov</span><span>4 cards</span><span data-phase></span></div>
+    </div></div>
+  </div>
+
+  <div class="opt"><div class="tag">2 · Moon behind <span>big glowing moon behind the logo</span></div>
+    <div class="frame"><div class="h2">
+      <svg class="moon" data-moon></svg>
+      <div class="logo">Luna</div>
+      <div class="hello">Good morning, Darren</div>
+      <div class="meta"><span>Fri 6 Nov</span><span>4 cards</span><span data-phase></span></div>
+    </div></div>
+  </div>
+
+  <div class="opt"><div class="tag">3 · Top bar <span>small logo bar, big greeting</span></div>
+    <div class="frame"><div class="h3">
+      <div class="bar">
+        <div class="brand"><svg class="moon" data-moon></svg><span class="logo">Luna</span></div>
+        <span class="pill">4 cards</span>
+      </div>
+      <div>
+        <p class="big">Good morning, <b>Darren</b></p>
+        <div class="meta" style="margin-top:8px"><span>Fri 6 Nov</span><span data-phase></span></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="opt"><div class="tag">4 · Glass banner <span>moon peeking in from the right</span></div>
+    <div class="frame"><div class="h4">
+      <svg class="moon" data-moon></svg>
+      <div class="logo">Luna</div>
+      <div class="hello">Good morning, Darren</div>
+      <div class="meta"><span>Fri 6 Nov</span><span>4 cards</span><span data-phase></span></div>
+    </div></div>
+  </div>
+
+  <div class="opt"><div class="tag">5 · Date first <span>the day is the hero</span></div>
+    <div class="frame"><div class="h5">
+      <div class="bar"><svg class="moon" data-moon></svg><span class="logo">Luna</span></div>
+      <p class="day">Friday</p>
+      <div class="date">6 November</div>
+      <div class="row"><span class="hello">Good morning, Darren</span><span class="pill">4 cards</span><span class="pill" data-phase></span></div>
+    </div></div>
+  </div>
+
+  <div class="reply">
+    <p>Reply in chat with a number, e.g. <b>"3"</b></p>
+    <p>Or mix them, like "3 but with the big moon from 2".</p>
+  </div>
+</div>
+
+<script>
+// Moon (real phase for Fri 6 Nov 2026), drawn into every [data-moon]
+(function () {
+  const date = new Date('2026-11-06T08:00:00Z');
+  const ref = Date.UTC(2000, 0, 6, 18, 14);
+  const f = ((((date - ref) / 86400000) % 29.530589) + 29.530589) % 29.530589 / 29.530589;
+  const names = ['New moon', 'Waxing crescent', 'First quarter', 'Waxing gibbous', 'Full moon', 'Waning gibbous', 'Last quarter', 'Waning crescent'];
+  const lit = 1 - Math.abs(1 - 2 * f), off = 80 * lit * (f < .5 ? -1 : 1);
+  document.querySelectorAll('[data-phase]').forEach(e => e.textContent = names[Math.round(f * 8) % 8]);
+  document.querySelectorAll('[data-moon]').forEach((svg, i) => {
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.innerHTML = `<defs>
+      <radialGradient id="mg${i}" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#d9cfae"/></radialGradient>
+      <mask id="mk${i}"><rect width="100" height="100" fill="white"/><circle cx="${50 + off}" cy="50" r="${lit > .97 ? 0 : 40}" fill="black"/></mask></defs>
+      <circle cx="50" cy="50" r="40" fill="#2a2655" opacity=".55"/>
+      <g mask="url(#mk${i})"><circle cx="50" cy="50" r="40" fill="url(#mg${i})"/>
+      <circle cx="36" cy="40" r="6" fill="#cfc4a0" opacity=".55"/><circle cx="30" cy="62" r="4" fill="#cfc4a0" opacity=".5"/>
+      <circle cx="48" cy="72" r="3" fill="#cfc4a0" opacity=".45"/></g>`;
+  });
+})();
+
+// Moving stars
+(function () {
+  const c = document.getElementById('stars'), x = c.getContext('2d');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W, H, d, stars = [];
+  function build() {
+    d = devicePixelRatio || 1; W = c.width = innerWidth * d; H = c.height = innerHeight * d;
+    stars = Array.from({ length: Math.round(innerWidth * innerHeight / 5000) }, () => ({
+      x: Math.random() * W, y: Math.random() * H, r: (.25 + Math.random() ** 3 * 1.4) * d, a: .2 + Math.random() * .7,
+      tw: .4 + Math.random() * 1.6, ph: Math.random() * 6.28, z: .2 + Math.random() * .8 }));
+  }
+  function frame(t) {
+    x.clearRect(0, 0, W, H);
+    for (const p of stars) {
+      if (!still) { p.x -= .035 * p.z * d; if (p.x < -2) p.x = W + 2; }
+      x.globalAlpha = p.a * (still ? 1 : .65 + .35 * Math.sin(t / 1000 * p.tw + p.ph)) * .8;
+      x.fillStyle = '#fff'; x.beginPath(); x.arc(p.x, p.y, p.r, 0, 6.283); x.fill();
+    }
+    if (!still) requestAnimationFrame(frame);
+  }
+  build(); addEventListener('resize', () => { build(); if (still) frame(0); });
+  requestAnimationFrame(frame);
+})();
+</script>
