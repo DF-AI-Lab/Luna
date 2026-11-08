@@ -89,4 +89,4 @@ Write `briefing/today` with ArtifactData `set` (pin `if_version` to the version 
 - Update `known-facts.md` (add what's now known or done; remove lines that are fully done and in the past).
 - Add one line to `log/usage.md`: date, number of cards, and the token totals each Agent call reported (rough is fine).
 - Commit to `main` with message `Luna run <date>` and push.
-- Final message: one line, e.g. "Luna ready: 9 cards, 2 replies acted on."
+- Final message: one line plus the page link, e.g. "Luna ready: 9 cards, 2 replies acted on. Open: https://claude.ai/artifact/K9WPKsdLQLMoMyb6iCPm5C". This is what the phone ping shows, so Darren can tap straight through.
