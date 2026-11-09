@@ -10,6 +10,8 @@ Darren reads the result on his phone, so keep everything short.
   - Read and write its database with the **ArtifactData** tool (load it with ToolSearch first)
   - `briefing/today`: today's cards (you write it)
   - `replies/<YYYY-MM-DD>`: Darren's answers to that day's cards (the page writes it)
+  - `facts/<id>`: things Darren confirmed on a card (the page writes it)
+  - `pins/<id>`: cards Darren pinned to the top (the page writes it). Never delete or change these docs yourself.
 - Time zone: Europe/London. Today's date is in your environment.
 
 ## Safety (never break these)
@@ -91,6 +93,9 @@ Write `briefing/today` with ArtifactData `set` (pin `if_version` to the version 
 - One card = one thing. Never the same thing in two sections.
 - `id`s stay the same for the same thing across days.
 - Aim for under 12 cards.
+- **Pinned cards** (`ArtifactData list` on `pins`): Darren wants these front of mind. Always include a card with the same `id`
+  every day, even if it would normally be dropped or is in known-facts. Refresh its lines/when if anything changed.
+  The page shows it at the top, folded. Pinned cards don't count toward the 12.
 
 ### 6. Save and finish
 - Write each helper's new memory to its `helpers/*-memory.md`.
