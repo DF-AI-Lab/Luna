@@ -20,3 +20,6 @@ TaskNotes is Darren's own to-do app (connected as the TaskNotes tools).
 ## When told to add or change
 - Add or edit with a clear title, category and due date. Hand back the [id].
 - Never complete or delete unless Opus says Darren asked. Deletes only mark items; Darren confirms in the app.
+
+## Lessons
+- (none yet)

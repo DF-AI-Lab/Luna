@@ -28,6 +28,9 @@ connector to the Luna scheduled task." Use the other apps as normal. Never make 
 
 ### 1. Load memory
 Read `known-facts.md` and the newest file in `log/`.
+Then `ArtifactData list` on the `facts` collection of the Luna page. These are things Darren confirmed on a card
+(e.g. "car insurance is sorted"). Copy each one into `known-facts.md` under **Sorted (never ask again)** if it isn't
+there yet. Never make a card about a sorted thing again unless something new and different happens.
 
 ### 2. Act on yesterday's replies
 - `ArtifactData get` on `briefing/today` (the old cards) and `replies/<that briefing's date>`.
@@ -42,6 +45,10 @@ Read `known-facts.md` and the newest file in `log/`.
   - **drop** (old name: skip): never show it again. Add it to known-facts so it doesn't come back. **Deletes nothing** in TaskNotes/Calendar.
   - **reply text**: do what it says (add/edit a task, add/update a calendar event, draft an email). Use a Sonnet helper for the doing.
 - Keep a plain list of everything you actually changed, one short line each, saying where. E.g. "Maths assessment: ticked off in TaskNotes, calendar reminder marked ✅ done". Only things that really happened. This goes in `did` (step 5).
+- **Darren corrects Luna** (e.g. "this is set up", "you got this wrong", "stop asking"): fix the fact AND save the lesson
+  in the right role's file, so it doesn't happen again. One short line under `## Lessons` at the bottom:
+  - Opus's own mistake (cards, merging, asking again) → `BRIEFING.md`
+  - A helper's mistake → that helper's rules file (`helpers/tasknotes.md`, `helpers/calendar.md` or `helpers/email.md`)
 - Log every answer to `log/<date>.jsonl` (format in `log/README.md`).
 - No replies? That's fine, carry the cards forward if they still matter.
 
@@ -91,3 +98,7 @@ Write `briefing/today` with ArtifactData `set` (pin `if_version` to the version 
 - Add one line to `log/usage.md`: date, number of cards, and the token totals each Agent call reported (rough is fine).
 - Commit to `main` with message `Luna run <date>` and push.
 - Final message: one line plus the page link, e.g. "Luna ready: 9 cards, 2 replies acted on. Open: https://claude.ai/artifact/K9WPKsdLQLMoMyb6iCPm5C". This is what the phone ping shows, so Darren can tap straight through.
+
+## Lessons
+Short rules learned from Darren's corrections. Follow them every run.
+- If Darren says something is set up or sorted, check his emails/calendar, then record it in known-facts as sorted. Never ask him about it again. (Car insurance was asked 4 times, Nov 2026.)

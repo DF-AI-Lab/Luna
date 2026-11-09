@@ -6,5 +6,5 @@
 - JRHT painting and countertops/sink (Simon): still no reply as of 9 Nov.
 - Sky: replacement Sky Q box delivered 9 Nov. New-device sign-in alerts 8 Nov (Android) and 9 Nov 17:45 (Windows), not yet confirmed as Darren.
 - GitHub wheres-my-money-lite Deploy Worker failed 8 Nov (main and a claude/ branch).
-- Car insurance: no replacement policy email seen since the Dial Direct policy ended 1 Nov.
+- Car insurance: SORTED. Picnic Premier (PIC6029561472PN) from 2 Nov 2026. Lesson: Picnic emails are the insurer, not promos. Don't flag car insurance again.
 - Ignore: LinkedIn, FunderPro, Todoist, Claude Team, Sky promos, JRHT newsletter, Google security alerts for df-ai-lab.github.io.

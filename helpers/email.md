@@ -19,3 +19,6 @@
 
 ## When told to draft a reply
 - Create a Gmail **draft** only (create_draft). Never send. Hand back the draft link.
+
+## Lessons
+- Picnic (picnicinsurance.com) is Darren's car insurer. Their emails are real policy mail, not promos.

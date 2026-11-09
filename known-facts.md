@@ -8,6 +8,9 @@ Luna skips these unless they change. Remove a line once it's fully done and in t
 - Tue 10 Nov, 5:30pm: chiropractor, Simply Chiropractic, 74 Clifton. In calendar.
 - JRHT downstairs WC works (ref MW532687): 16, 17, 18 Nov. Times unknown. Not in calendar.
 
+## Sorted (never ask again)
+- Car insurance: SORTED. Picnic Premier, policy PIC6029561472PN, car YJ70ULK. Started 2 Nov 2026, £26.21/month (DD on the 2nd). Replaced Dial Direct (ended 1 Nov). Renewal already in calendar for 2 Nov 2027. Don't ask again until Oct 2027.
+
 ## Waiting on others
 - JRHT: bathroom painting. Darren emailed, waiting for reply.
 - JRHT: countertops and sink with Simon. Darren emailed, waiting for reply.
