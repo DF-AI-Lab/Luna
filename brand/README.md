@@ -15,3 +15,4 @@ Two apps, one family. Colour tells them apart.
 - Same moon surface on both (same seed, spread-out seas), only the shadow differs.
 - Icons: "Ring behind" orbit style, LUNA on top, AGENT / ASSIST underneath, 512×512, still images.
 - `headers-and-icons-mock.html` holds the approved Assistant header (copy its `header.asst` block and CSS when building the Assistant app).
+- Settings: faint ⋮ in the header's top-right corner (option 1). Same on the Assistant header.

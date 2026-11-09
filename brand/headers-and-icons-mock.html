@@ -78,6 +78,25 @@ header { position: relative; border: 1px solid var(--edge); border-radius: 22px;
 .app.dark { background: radial-gradient(circle at 50% 40%, #0d1224, #02030a 75%); }
 @media (max-width: 420px) { .iconset { grid-template-columns: 1fr; } }
 header { border-color: rgba(169,155,255,.32); box-shadow: 0 0 0 1px rgba(169,155,255,.06), 0 0 34px -10px rgba(169,155,255,.35); }
+.optbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font: 600 .82rem var(--ui); color: var(--muted); }
+.optbar button { font: 700 .8rem var(--ui); color: var(--fg); background: rgba(255,255,255,.04); border: 1px solid var(--edge); border-radius: 99px; padding: 7px 12px; cursor: pointer; }
+.optbar button[aria-pressed="true"] { background: rgba(169,155,255,.18); border-color: rgba(169,155,255,.5); }
+header { overflow: visible !important; }
+header:has(.menu:not([hidden])) { z-index: 10; }
+.dots { display: none; place-items: center; border: 0; background: transparent; color: var(--muted); opacity: .45; cursor: pointer; padding: 0; border-radius: 50%; transition: opacity .2s, background .2s, color .2s; z-index: 3; }
+.dots svg { width: 18px; height: 18px; fill: currentColor; }
+.dots:hover, .dots:focus-visible, .dots.open { opacity: 1; color: var(--fg); background: rgba(255,255,255,.07); }
+.dots:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+body[data-opt="1"] .d1 { display: grid; position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; }
+body[data-opt="2"] .d2 { display: inline-grid; align-self: center; width: 26px; height: 26px; margin-left: 6px; }
+body[data-opt="2"] .d2 svg { width: 16px; height: 16px; }
+body[data-opt="3"] .d3 { display: grid; position: absolute; bottom: 8px; right: 10px; width: 30px; height: 22px; border-radius: 99px; background: rgba(255,255,255,.04); }
+.menu { position: absolute; top: 44px; right: 8px; z-index: 5; min-width: 200px; display: flex; flex-direction: column; padding: 6px; border-radius: 14px;
+  background: rgba(14,18,36,.96); border: 1px solid var(--edge); box-shadow: 0 18px 40px -12px rgba(0,0,0,.9); backdrop-filter: blur(14px); }
+body[data-opt="3"] .menu { top: auto; bottom: 36px; }
+body[data-opt="2"] .menu { right: auto; left: 150px; top: 46px; }
+.menu button { text-align: left; font: 600 .88rem var(--ui); color: var(--fg); background: none; border: 0; border-radius: 9px; padding: 9px 10px; cursor: pointer; }
+.menu button:hover { background: rgba(255,255,255,.06); }
 header.asst { --violet: #8fd3ff; border-color: rgba(143,211,255,.32); box-shadow: 0 0 0 1px rgba(143,211,255,.06), 0 0 34px -10px rgba(143,211,255,.35); }
 header.asst .ver { border-color: rgba(143,211,255,.25); }
 .wordmark { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 2px; }
@@ -227,15 +246,21 @@ pre { background: rgba(3, 4, 14, .55); border: 1px solid var(--edge); border-rad
 <canvas id="fx" aria-hidden="true"></canvas>
 
 <div class="wrap">
+  <div class="optbar" role="group" aria-label="Settings button options">
+    <span>Settings button:</span>
+    <button type="button" data-o="1" aria-pressed="true">1 · Corner ⋮</button>
+    <button type="button" data-o="2" aria-pressed="false">2 · By version ⋯</button>
+    <button type="button" data-o="3" aria-pressed="false">3 · Bottom corner ⋯</button>
+  </div>
   <header>
-    <canvas class="moon" id="moon" aria-hidden="true"></canvas>
-    <h1 class="wordmark">Luna<span class="tag">Agent</span><span class="ver">v1.01</span></h1>
+    <canvas class="moon" id="moon" aria-hidden="true"></canvas><button class="dots d1" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button><button class="dots d3" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg></button><div class="menu" role="menu" hidden><button role="menuitem">⏰ Morning run · 7:40</button><button role="menuitem">🔔 Sounds</button><button role="menuitem">ℹ️ About · v1.01</button></div>
+    <h1 class="wordmark">Luna<span class="tag">Agent</span><span class="ver">v1.01</span><button class="dots d2" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg></button></h1>
     <div class="hello" id="hello">Good morning, Darren</div>
     <div class="meta"><span id="dateLabel">Mon 9 Nov</span><span class="clock"></span><span id="cardCount">4 cards</span><span class="mockflag" id="flag" hidden></span></div>
   </header>
   <header class="asst">
-    <canvas class="moon" id="moon2" aria-hidden="true"></canvas>
-    <h1 class="wordmark">Luna<span class="tag">Assistant</span><span class="ver">v1.01</span></h1>
+    <canvas class="moon" id="moon2" aria-hidden="true"></canvas><button class="dots d1" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button><button class="dots d3" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg></button><div class="menu" role="menu" hidden><button role="menuitem">⏰ Morning run · 7:40</button><button role="menuitem">🔔 Sounds</button><button role="menuitem">ℹ️ About · v1.01</button></div>
+    <h1 class="wordmark">Luna<span class="tag">Assistant</span><span class="ver">v1.01</span><button class="dots d2" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg></button></h1>
     <div class="hello" id="hello2"></div>
     <div class="meta"><span>Mon 9 Nov</span><span class="clock"></span></div>
   </header>
@@ -429,6 +454,10 @@ function makeMoon(ID, FL, STILL) {
 }
 makeMoon('moon', 2/3);   // Agent: 3/4 full, shadow right
 makeMoon('moon2', .87);
+document.body.dataset.opt = '1';
+document.querySelectorAll('.optbar button').forEach(b => b.onclick = () => { document.body.dataset.opt = b.dataset.o; document.querySelectorAll('.optbar button').forEach(x => x.setAttribute('aria-pressed', x === b)); document.querySelectorAll('.menu').forEach(m => m.hidden = true); });
+document.querySelectorAll('.dots').forEach(d => d.onclick = e => { e.stopPropagation(); const m = d.closest('header').querySelector('.menu'); const show = m.hidden; document.querySelectorAll('.menu').forEach(x => x.hidden = true); document.querySelectorAll('.dots').forEach(x => x.classList.remove('open')); m.hidden = !show; d.classList.toggle('open', show); });
+document.addEventListener('click', () => { document.querySelectorAll('.menu').forEach(x => x.hidden = true); document.querySelectorAll('.dots').forEach(x => x.classList.remove('open')); });
 makeMoon('icon1', 2/3, true); makeMoon('icon2', .87, true); makeMoon('icon3', 2/3, true); makeMoon('icon4', .87, true);
 // flat icon options (SVG)
 (function () {
