@@ -67,6 +67,7 @@
 | 13 | Done and typed/spoken replies happen straight away from the page (Sonnet-tier helper using Darren's connectors, on his Pro usage). Tomorrow/Drop wait for the morning run. Emails are drafts only, nothing deleted (the page has no delete or send tools) | Darren wants it done when he taps it, with a message saying what was done | 8 Nov 2026 |
 | 14 | Voice button on each card (browser speech-to-text). Falls back to the phone keyboard mic if blocked | Faster replies | 8 Nov 2026 |
 | 15 | Buttons: OK (seen) · Done · Remind (tomorrow / 3 days / next week / date) · Drop (deletes nothing). All fold with Undo | Clearer than Tomorrow/Drop | 8 Nov 2026 |
+| 17 | Names: **Luna Agent** (violet, online) and **Luna Assistant** (light blue). Header v1.01, icons in `brand/` | Easy to tell apart at a glance | 9 Nov 2026 |
 | 16 | Luna + Orbit stay two apps, one look: Smart Luna (online, claude.ai, Pro usage, schedule) + Thick Luna (Orbit reskinned as Luna, offline, free tiny model, learns from Luna's logs). Claude API only as a backup in Thick Luna, with a monthly spend cap | Pro usage only works in claude.ai; offline needs its own app; API costs money so keep it on a leash | 8 Nov 2026 |
 
 ## Link to Orbit (app-assistant repo)
