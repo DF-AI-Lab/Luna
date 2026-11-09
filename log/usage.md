@@ -4,3 +4,4 @@ Rough token use each morning, to check Luna fits the Pro plan.
 
 | Date | Cards | Opus | TaskNotes (Haiku) | Calendar (Haiku) | Gmail (Sonnet) | Actions (Sonnet) | Notes |
 |---|---|---|---|---|---|---|---|
+| 2026-11-09 | 6 | (evening catch-up run) | ~73k | ~76k | ~105k | 2 page actions 8 Nov | 7:40 run had no connectors; rerun from main session |
