@@ -7,6 +7,7 @@ Luna skips these unless they change. Remove a line once it's fully done and in t
 - Wed 11 Nov, 1:50pm: dentist, York Dental Practice (Vaishnavi Kulkvarni). CONFIRMED by email 9 Nov. Calendar still shows a 2pm TBC placeholder.
 - Tue 10 Nov, 5:30pm: chiropractor, Simply Chiropractic, 74 Clifton. In calendar.
 - JRHT downstairs WC works (ref MW532687): 16, 17, 18 Nov. Times unknown. Not in calendar.
+- Sat 14 Nov: Sky TV delivery (new order 10 Nov, account 625468516210). Time by text the day before. Not in calendar.
 
 ## Sorted (never ask again)
 - Car insurance: SORTED. Picnic Premier, policy PIC6029561472PN, car YJ70ULK. Started 2 Nov 2026, £26.21/month (DD on the 2nd). Replaced Dial Direct (ended 1 Nov). Renewal already in calendar for 2 Nov 2027. Don't ask again until Oct 2027.
@@ -22,9 +23,12 @@ Luna skips these unless they change. Remove a line once it's fully done and in t
 - Fix sofa from moving (overdue, no plan yet)
 
 ## Reminders
+- Remind 2026-11-16: JRHT works: downstairs WC
 - Remind 2026-11-15: GitHub sign-in check
 
 ## Ignore
+- Sky new-device sign-in emails (dropped 9 Nov)
+- Where's My Money deploy failures (dropped 9 Nov; for a coding session)
 - LinkedIn job alerts, FunderPro, eBay, Sky promos and other promo emails
 - Todoist daily emails (Luna uses TaskNotes now). Darren has to turn these off in Todoist's own settings
 - TaskNotes notes to review (dropped 8 Nov)
