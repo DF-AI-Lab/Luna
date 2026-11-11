@@ -113,3 +113,4 @@
 - 2026-11-08: Buttons now OK · Done · Remind (Tomorrow / 3 days / Next week / date) · Drop. All fold with Undo. Drop deletes nothing.
 - 2026-11-08: Decided Luna + Orbit = Smart Luna (online) + Thick Luna (offline, Orbit reskinned), API backup only with a cap. Parked till after first runs
 - 2026-11-09: Settings ⋮ menu + Run now (quick run from the page: read-only look-ups, skips facts/, keeps pins, writes briefing/today with quickRun:true). The 7:40 full run still overwrites it each morning.
+- 2026-11-11: Luna page v17: chat dock (type, + photo/camera/file, talk mode tap-to-talk/tap-to-send, segment progress). Chat logs to db chat/<date>.
