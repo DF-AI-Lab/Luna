@@ -2,11 +2,11 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
-/* Layout: one live phone you can play through, then the 4 states side by side. Single dark look, Luna's night sky. */
+/* Layout: one live phone you can play through, then every state side by side. Keeps Luna's current sheet exactly; only adds animations + Send/Cancel. */
 :root {
   color-scheme: dark;
   --sky-top: #03050f; --sky-mid: #0a1130; --sky-low: #1d1d45;
-  --panel: #1c1f3a; --panel-hi: #262a4d; --edge: rgba(190,200,255,.14);
+  --panel: #1f2240; --panel-lo: #191b33; --card: #2a2a3f; --edge: rgba(190,200,255,.14);
   --fg: #f1f2ff; --muted: #a3a8c8; --violet: #a99bff; --violet-deep: #6c5ce7; --green: #7fe0a8;
   --ui: "Manrope", "Segoe UI", system-ui, sans-serif;
   --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
@@ -26,106 +26,118 @@ h2 { font-family: var(--ui); font-weight: 700; font-size: .8rem; letter-spacing:
   margin: 0 0 16px; display: flex; gap: 10px; align-items: center; }
 h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--edge), transparent); }
 
-/* ---------- the voice sheet ---------- */
-.sheet {
-  width: 100%; max-width: 360px; background: linear-gradient(170deg, var(--panel-hi), var(--panel));
-  border: 1px solid var(--edge); border-radius: 26px; padding: 14px 14px 16px;
-  display: flex; flex-direction: column; gap: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.45);
-}
-.tabs { display: flex; gap: 8px; align-items: center; }
-.tab { font-family: var(--ui); font-weight: 700; font-size: .85rem; padding: 6px 14px; border-radius: 99px; border: 1px solid var(--edge); color: var(--muted); }
-.tab.on { background: rgba(169,155,255,.18); color: var(--fg); border-color: rgba(169,155,255,.45); }
-.tabs .x { margin-left: auto; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--edge); display: grid; place-items: center; color: var(--muted); }
+/* ---------- phone screen ---------- */
+.screen { position: relative; width: 100%; max-width: 380px; height: 470px; border-radius: 26px; overflow: hidden;
+  background: linear-gradient(180deg, #14142a, #241d33); border: 1px solid var(--edge); }
+.bgcard { position: absolute; left: 14px; right: 14px; top: 16px; border-radius: 22px; background: var(--card); border: 1px solid var(--edge); padding: 18px 20px; }
+.bgcard h3 { font-family: var(--ui); font-weight: 800; font-size: 1.15rem; margin: 0; }
+.bgcard .when { color: var(--violet); font-size: .9rem; }
+.bgcard ul { color: var(--muted); margin: 8px 0 0; padding-left: 20px; font-size: .95rem; }
 
-.stage { height: 230px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; position: relative; }
+/* collapsed bits (unchanged from the app) */
+.progress { position: absolute; left: 12px; bottom: 14px; display: flex; flex-direction: column; gap: 4px; padding: 10px 14px; border-radius: 22px;
+  background: rgba(20,22,45,.9); border: 1px solid var(--edge); font-size: .82rem; color: var(--muted); }
+.progress .segs { display: flex; gap: 3px; } .progress .segs i { width: 11px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.18); }
+.progress .segs i.on { background: var(--violet); }
+.ask { position: absolute; right: 12px; bottom: 14px; height: 54px; padding: 0 22px; border-radius: 28px; border: 0; cursor: pointer;
+  font-family: var(--ui); font-weight: 800; font-size: 1rem; color: #fff; display: flex; gap: 10px; align-items: center;
+  background: linear-gradient(135deg, #a99bff, #6c5ce7); box-shadow: 0 0 30px rgba(143,125,255,.55); }
+.ask svg { width: 18px; height: 18px; }
 
-/* orb */
-.orb { width: 108px; height: 108px; border-radius: 50%; position: relative;
-  background: radial-gradient(circle at 35% 30%, #d8d0ff, #8f7dff 55%, #5b48d6);
-  box-shadow: 0 0 50px rgba(143,125,255,.45); transition: transform .5s, width .5s, height .5s; }
-.listening .orb { animation: breathe 1.2s ease-in-out infinite; }
-@keyframes breathe { 50% { transform: scale(1.08); box-shadow: 0 0 80px rgba(143,125,255,.7); } }
-
-/* thinking: orb shrinks, a ring spins round it, 3 moons orbit */
-.thinking .orb, .working .orb { width: 78px; height: 78px; animation: swirl 3s linear infinite; }
-@keyframes swirl { 0% { filter: hue-rotate(0deg); } 50% { filter: hue-rotate(-25deg); } 100% { filter: hue-rotate(0deg); } }
-.ring { position: absolute; width: 120px; height: 120px; border-radius: 50%; top: 50%; left: 50%; margin: -60px 0 0 -60px;
-  border: 2px solid transparent; border-top-color: var(--violet); border-right-color: rgba(169,155,255,.35);
-  animation: spin 1.1s linear infinite; display: none; }
-.orbit { position: absolute; width: 150px; height: 150px; top: 50%; left: 50%; margin: -75px 0 0 -75px; animation: spin 2.4s linear infinite; display: none; }
-.orbit i { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: #e4ddff; box-shadow: 0 0 10px #b9adff; }
-.orbit i:nth-child(1) { top: 0; left: 70px; }
-.orbit i:nth-child(2) { bottom: 18px; left: 8px; opacity: .7; }
-.orbit i:nth-child(3) { bottom: 18px; right: 8px; opacity: .45; }
-.thinking .ring, .thinking .orbit, .working .ring, .working .orbit { display: block; }
+/* the sheet (same layout as the app) */
+.sheet { position: absolute; left: 8px; right: 8px; bottom: 8px; border-radius: 24px; padding: 12px 12px 12px;
+  background: linear-gradient(180deg, var(--panel), var(--panel-lo)); border: 1px solid var(--edge);
+  box-shadow: 0 -10px 40px rgba(0,0,0,.5); display: flex; flex-direction: column; animation: up .35s ease-out; }
+@keyframes up { from { transform: translateY(30px); opacity: 0; } }
+.chev { align-self: flex-end; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--edge); display: grid; place-items: center; color: var(--muted); }
+.stage { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 0 0 12px; }
+.orb-wrap { position: relative; width: 140px; height: 140px; display: grid; place-items: center; }
+.orb { width: 110px; height: 110px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 28%, #d4ccff, #9a8bff 50%, #6f5de0);
+  box-shadow: 0 0 50px rgba(143,125,255,.45); transition: width .5s, height .5s; }
+.ring, .orbit { position: absolute; top: 50%; left: 50%; display: none; }
+.ring { width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%; border: 2px solid transparent;
+  border-top-color: var(--violet); border-right-color: rgba(169,155,255,.35); animation: spin 1.1s linear infinite; }
+.orbit { width: 140px; height: 140px; margin: -70px 0 0 -70px; animation: spin 2.4s linear infinite; }
+.orbit i { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #e4ddff; box-shadow: 0 0 10px #b9adff; }
+.orbit i:nth-child(1) { top: 2px; left: 66px; } .orbit i:nth-child(2) { bottom: 20px; left: 8px; opacity: .7; } .orbit i:nth-child(3) { bottom: 20px; right: 8px; opacity: .45; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.orb-wrap { position: relative; display: grid; place-items: center; width: 150px; height: 150px; }
 
-/* wave bars */
-.wave { display: flex; gap: 4px; height: 26px; align-items: center; }
-.wave b { width: 4px; border-radius: 3px; background: var(--violet); height: 6px; }
-.listening .wave b { animation: bar .9s ease-in-out infinite; }
-.wave b:nth-child(2){animation-delay:.1s}.wave b:nth-child(3){animation-delay:.25s}.wave b:nth-child(4){animation-delay:.05s}.wave b:nth-child(5){animation-delay:.3s}.wave b:nth-child(6){animation-delay:.15s}.wave b:nth-child(7){animation-delay:.2s}
-@keyframes bar { 50% { height: 24px; } }
-.thinking .wave, .working .wave, .reply .wave { display: none; }
+/* the 5 little dots under the orb: idle = still, listening = sound bars, thinking = ripple */
+.dots5 { display: flex; gap: 4px; height: 22px; align-items: center; }
+.dots5 b { width: 4px; height: 4px; border-radius: 3px; background: rgba(169,155,255,.55); }
+.status { font-family: var(--ui); font-weight: 600; font-size: .95rem; color: var(--muted); text-align: center; min-height: 1.4em; }
+.status strong { color: var(--fg); font-weight: 700; }
+.ellip { display: inline-block; width: 1.2em; text-align: left; }
+.ellip::after { content: ""; animation: ellip 1.2s steps(4) infinite; }
+@keyframes ellip { 0%{content:""} 25%{content:"."} 50%{content:".."} 75%{content:"..."} }
 
-.status { font-family: var(--ui); font-weight: 700; font-size: 1rem; text-align: center; min-height: 1.5em; }
-.status small { display: block; font-family: var(--body); font-weight: 400; color: var(--muted); font-size: .85rem; }
-.dots { display: inline-block; width: 1.2em; text-align: left; }
-.dots::after { content: ""; animation: dots 1.2s steps(4) infinite; }
-@keyframes dots { 0%{content:""} 25%{content:"."} 50%{content:".."} 75%{content:"..."} }
+.listening .orb { animation: breathe 1.2s ease-in-out infinite; }
+@keyframes breathe { 50% { transform: scale(1.07); box-shadow: 0 0 80px rgba(143,125,255,.75); } }
+.listening .dots5 b { background: var(--violet); animation: bar .9s ease-in-out infinite; }
+.dots5 b:nth-child(2){animation-delay:.15s}.dots5 b:nth-child(3){animation-delay:.3s}.dots5 b:nth-child(4){animation-delay:.1s}.dots5 b:nth-child(5){animation-delay:.25s}
+@keyframes bar { 50% { height: 20px; } }
 
-/* what you said */
-.heard { background: rgba(255,255,255,.05); border: 1px solid var(--edge); border-radius: 16px; padding: 10px 12px; font-size: .92rem; }
-.heard .lbl { font-family: var(--ui); font-weight: 700; font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--violet); display: flex; justify-content: space-between; }
-.heard .lbl span { color: var(--green); }
-.caret { display: inline-block; width: 2px; height: 1em; background: var(--violet); vertical-align: -2px; margin-left: 2px; animation: blink 1s step-end infinite; }
-@keyframes blink { 50% { opacity: 0; } }
+.thinking .orb, .working .orb { width: 80px; height: 80px; animation: hue 3s ease-in-out infinite; }
+.thinking .ring, .thinking .orbit, .working .ring, .working .orbit { display: block; }
+@keyframes hue { 50% { filter: hue-rotate(-25deg) brightness(1.1); } }
+.thinking .dots5 b, .working .dots5 b { animation: ripple 1s ease-in-out infinite; }
+@keyframes ripple { 0%,100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-6px); opacity: 1; background: var(--violet); } }
 
-/* reply bubble */
+/* reply */
 .answer { background: linear-gradient(160deg, rgba(169,155,255,.2), rgba(108,92,231,.12)); border: 1px solid rgba(169,155,255,.35);
-  border-radius: 18px 18px 18px 6px; padding: 12px 14px; font-size: .95rem; animation: rise .4s ease-out; }
-.answer .who { font-family: var(--ui); font-weight: 800; font-size: .75rem; color: var(--violet); margin-bottom: 2px; }
+  border-radius: 18px 18px 18px 6px; padding: 10px 14px; font-size: .95rem; margin: 4px 0 12px; animation: rise .4s ease-out; }
+.answer .who { font-family: var(--ui); font-weight: 800; font-size: .75rem; color: var(--violet); }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
-.reply .stage { height: auto; padding-block: 6px; }
-.reply .orb-wrap { width: 54px; height: 54px; } .reply .orb { width: 44px; height: 44px; box-shadow: 0 0 24px rgba(143,125,255,.4); }
-.reply .speaking { display: flex; }
+.reply .orb-wrap { width: 64px; height: 64px; } .reply .orb { width: 52px; height: 52px; animation: talk .5s ease-in-out infinite alternate; }
+@keyframes talk { to { transform: scale(1.08); } }
+.reply .stage { padding-bottom: 6px; }
 
-/* bottom bar */
+/* bottom bar (same shape as app: round left, input, round right) */
 .bar { display: flex; gap: 10px; align-items: center; border-top: 1px solid var(--edge); padding-top: 12px; }
-.btn { font-family: var(--ui); font-weight: 700; font-size: .95rem; border-radius: 99px; height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--edge); color: var(--fg); background: rgba(255,255,255,.04); cursor: pointer; }
-.btn svg { width: 18px; height: 18px; }
-.cancel { flex: 0 0 auto; padding: 0 18px; color: var(--muted); }
-.send { flex: 1; background: linear-gradient(180deg, #9d8cff, var(--violet-deep)); border-color: transparent; box-shadow: 0 6px 24px rgba(108,92,231,.5); font-size: 1.02rem; }
-.btn:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
-.btn.wide { flex: 1; }
-.btn.ghost { flex: 1; color: var(--muted); }
+.rb { flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--edge); background: rgba(255,255,255,.04);
+  color: var(--muted); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.rb svg { width: 20px; height: 20px; }
+.rb.mic { background: linear-gradient(135deg, #a99bff, #6c5ce7); color: #fff; border-color: transparent; }
+.input { flex: 1; min-width: 0; height: 48px; border-radius: 24px; border: 1px solid var(--edge); background: rgba(255,255,255,.03);
+  padding: 0 16px; display: flex; align-items: center; color: var(--muted); font-size: .98rem; white-space: nowrap; overflow: hidden; }
+.input.live { color: var(--fg); justify-content: flex-end; }
+.caret { display: inline-block; width: 2px; height: 1.1em; background: var(--violet); margin-left: 2px; animation: blink 1s step-end infinite; flex: 0 0 auto; }
+@keyframes blink { 50% { opacity: 0; } }
+.pill { flex: 0 0 auto; height: 48px; border-radius: 24px; border: 0; padding: 0 18px; cursor: pointer; display: flex; gap: 6px; align-items: center;
+  font-family: var(--ui); font-weight: 800; font-size: .98rem; color: #fff; background: linear-gradient(135deg, #a99bff, #6c5ce7); box-shadow: 0 6px 22px rgba(108,92,231,.5); }
+.pill svg { width: 18px; height: 18px; }
+.cancel-pill { flex: 1; height: 48px; border-radius: 24px; border: 1px solid var(--edge); background: rgba(255,255,255,.04); color: var(--muted);
+  font-family: var(--ui); font-weight: 700; font-size: .95rem; display: flex; gap: 8px; align-items: center; justify-content: center; cursor: pointer; }
+.cancel-pill svg { width: 16px; height: 16px; }
+.lbl { font-size: .62rem; font-family: var(--ui); font-weight: 700; color: var(--muted); text-align: center; margin-top: 2px; }
+button:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
 
 /* ---------- page layout ---------- */
-.live { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 32px; align-items: start; }
-.steps { display: flex; flex-direction: column; gap: 10px; }
-.step { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; padding: 12px 14px; border-radius: 14px; border: 1px solid transparent; cursor: pointer; background: none; color: inherit; text-align: left; font: inherit; }
-.step .n { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-family: var(--ui); font-weight: 800; border: 1px solid var(--edge); color: var(--muted); }
+.live { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: 32px; align-items: start; }
+.steps { display: flex; flex-direction: column; gap: 8px; }
+.step { display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: start; padding: 10px 14px; border-radius: 14px; border: 1px solid transparent; cursor: pointer; background: none; color: inherit; text-align: left; font: inherit; }
+.step .n { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-family: var(--ui); font-weight: 800; border: 1px solid var(--edge); color: var(--muted); }
 .step b { font-family: var(--ui); display: block; }
-.step span.d { color: var(--muted); font-size: .92rem; }
+.step .d { color: var(--muted); font-size: .9rem; }
 .step.on { background: rgba(169,155,255,.1); border-color: rgba(169,155,255,.3); }
 .step.on .n { background: var(--violet-deep); color: #fff; border-color: transparent; }
-.play { align-self: flex-start; margin-top: 6px; padding: 0 22px; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.play { align-self: flex-start; margin-top: 8px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
 .frame { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .frame .cap { font-family: var(--ui); font-weight: 700; font-size: .9rem; }
 .frame .cap em { font-style: normal; color: var(--violet); margin-right: 6px; }
 .change { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
 .change li { padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid var(--edge); }
 .change li b { font-family: var(--ui); }
-@media (max-width: 720px) { .live { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .live { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
 </style>
 
 <div class="wrap">
   <header>
     <h1>Luna Voice Flow</h1>
-    <p class="intro">Fixes the two confusing bits: a clear Send and Cancel when you finish talking, and Luna shows she's working until the reply lands.</p>
+    <p class="intro">Same Ask Luna button, same sheet. Only new: animations so you know she's listening and thinking, plus clear Send and Cancel.</p>
   </header>
 
   <section>
@@ -137,94 +149,110 @@ h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg
   </section>
 
   <section>
-    <h2>All four screens</h2>
+    <h2>Every screen</h2>
     <div class="grid" id="grid"></div>
   </section>
 
   <section>
     <h2>What changed</h2>
     <ul class="change">
-      <li><b>Stop square is gone.</b> Two clear buttons: <b>Cancel</b> (throws it away) and <b>Send to Luna</b>.</li>
-      <li><b>You see what she heard.</b> Your words show live, then get a green tick when sent.</li>
-      <li><b>Thinking animation.</b> Orb shrinks, a ring spins, three little moons orbit. Never a blank screen.</li>
-      <li><b>She says what she's doing.</b> "Checking your tasks…" so you know it's working.</li>
-      <li><b>Cancel works while thinking too.</b> Changed your mind? Stop it any time.</li>
+      <li><b>Kept as is:</b> the hidden-away Ask Luna button, the progress pill and the sheet layout.</li>
+      <li><b>Listening:</b> orb breathes, the 5 dots bounce like sound bars, your words type into the box.</li>
+      <li><b>Done talking:</b> + becomes <b>✕ Cancel</b>, mic becomes <b>Send ↑</b>. No more stop square.</li>
+      <li><b>Thinking:</b> orb shrinks, a ring spins, moons orbit, dots ripple. Then "Checking your calendar…".</li>
+      <li><b>Reply:</b> answer pops in above, orb pulses while she speaks, bar goes back to normal.</li>
     </ul>
   </section>
 </div>
 
 <script>
 const IC = {
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
-  send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
+  send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
   mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
   down: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>',
-  kb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M8 14h8"/></svg>'
+  chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>'
 };
-const SAID = "Move the dentist to next Thursday and remind me the day before";
+const SAID = "Move the dentist to next Thursday";
 const STATES = [
-  { key: 'listening', title: 'Listening', d: 'Talk as long as you like. Your words appear as you go.' },
-  { key: 'thinking',  title: 'Sent, Luna is thinking', d: 'Tap Send. Your words lock in with a tick, the orb starts spinning.' },
-  { key: 'working',   title: 'Luna is doing it', d: 'She says what step she is on, so you are never left guessing.' },
-  { key: 'reply',     title: 'Reply arrives', d: 'Answer pops in and she reads it out. Tap to talk again.' }
+  { key: 'closed',    title: 'Hidden away', d: 'Unchanged. Ask Luna sits in the corner.' },
+  { key: 'idle',      title: 'Tap to speak', d: 'Unchanged. Same sheet, same orb.' },
+  { key: 'listening', title: 'Listening', d: 'Orb breathes, dots bounce, your words appear. Send or Cancel.' },
+  { key: 'thinking',  title: 'Luna is thinking', d: 'Orb spins with little moons. Cancel if you change your mind.' },
+  { key: 'working',   title: 'Luna is doing it', d: 'Says what step she\'s on.' },
+  { key: 'reply',     title: 'Reply arrives', d: 'Answer pops in, she reads it out.' }
 ];
 
-function sheet(key) {
-  const heard = key === 'listening'
-    ? `<div class="heard"><div class="lbl">Hearing you</div>${SAID.slice(0, 44)}<span class="caret"></span></div>`
-    : `<div class="heard"><div class="lbl">You said <span>✓ Sent</span></div>${SAID}</div>`;
+const bg = `<div class="bgcard"><h3>Sort Sky and pump up tyre</h3><div class="when">Today</div>
+  <ul><li>Both starred TaskNotes tasks are due today</li><li>Sky delivery is Sat 14 Nov</li></ul></div>`;
+
+function screen(key) {
+  if (key === 'closed') return `<div class="screen">${bg}
+    <div class="progress"><div class="segs"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>2 of 8 answered</div>
+    <button class="ask" type="button" data-go="1">${IC.chat}Ask Luna</button></div>`;
+
   const status = {
-    listening: `Listening<span class="dots"></span><small>Tap Send when you're done</small>`,
-    thinking: `Luna is thinking<span class="dots"></span><small>Got it. Working it out</small>`,
-    working: `Checking your calendar<span class="dots"></span><small>Moving Dentist · Thu 19 Nov</small>`,
-    reply: ``
+    idle: `Tap to speak`,
+    listening: `<strong>Listening<span class="ellip"></span></strong>`,
+    thinking: `<strong>Luna is thinking<span class="ellip"></span></strong>`,
+    working: `<strong>Checking your calendar<span class="ellip"></span></strong>`,
+    reply: `Speaking`
   }[key];
+
+  const input = {
+    idle: `<div class="input">Message Luna...</div>`,
+    listening: `<div class="input live">${SAID}<span class="caret"></span></div>`,
+    thinking: `<div class="input live">✓ ${SAID}</div>`,
+    working: `<div class="input live">✓ ${SAID}</div>`,
+    reply: `<div class="input">Message Luna...</div>`
+  }[key];
+
   const bar = {
-    listening: `<button class="btn cancel" type="button">${IC.x}Cancel</button><button class="btn send" type="button">${IC.send}Send to Luna</button>`,
-    thinking: `<button class="btn ghost" type="button">${IC.x}Cancel</button>`,
-    working: `<button class="btn ghost" type="button">${IC.x}Cancel</button>`,
-    reply: `<button class="btn ghost" type="button">${IC.kb}Type</button><button class="btn send" type="button">${IC.mic}Talk again</button>`
+    idle: `<button class="rb" type="button">${IC.plus}</button>${input}<button class="rb mic" type="button" data-go="2">${IC.mic}</button>`,
+    listening: `<button class="rb" type="button" aria-label="Cancel" data-go="1">${IC.x}</button>${input}<button class="pill" type="button" data-go="send">Send${IC.send}</button>`,
+    thinking: `<button class="cancel-pill" type="button" data-go="1">${IC.x}Cancel</button>`,
+    working: `<button class="cancel-pill" type="button" data-go="1">${IC.x}Cancel</button>`,
+    reply: `<button class="rb" type="button">${IC.plus}</button>${input}<button class="rb mic" type="button" data-go="2">${IC.mic}</button>`
   }[key];
-  const middle = key === 'reply'
-    ? `${heard}<div class="answer"><div class="who">Luna</div>Done. Dentist is now Thu 19 Nov at 1:50pm, and I'll remind you on Wed 18th.</div>
-       <div class="stage"><div class="orb-wrap"><div class="orb"></div></div><div class="status" style="font-size:.85rem;color:var(--muted)">Speaking…</div></div>`
-    : `<div class="stage"><div class="orb-wrap"><div class="ring"></div><div class="orbit"><i></i><i></i><i></i></div><div class="orb"></div></div>
-         <div class="wave"><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div><div class="status">${status}</div></div>${heard}`;
-  return `<div class="sheet ${key}">
-    <div class="tabs"><span class="tab">Type</span><span class="tab on">Talk</span><span class="x">${IC.down}</span></div>
-    ${middle}
-    <div class="bar">${bar}</div></div>`;
+
+  const answer = key === 'reply'
+    ? `<div class="answer"><div class="who">Luna</div>Done. Dentist moved to Thu 19 Nov, 1:50pm.</div>` : '';
+
+  return `<div class="screen">${bg}
+    <div class="sheet ${key}">
+      <span class="chev">${IC.down}</span>
+      ${answer}
+      <div class="stage">
+        <div class="orb-wrap"><div class="ring"></div><div class="orbit"><i></i><i></i><i></i></div><div class="orb" ${key==='idle'?'data-go="2" style="cursor:pointer"':''}></div></div>
+        <div class="dots5"><b></b><b></b><b></b><b></b><b></b></div>
+        <div class="status">${status}</div>
+      </div>
+      <div class="bar">${bar}</div>
+    </div></div>`;
 }
 
-// static grid
 document.getElementById('grid').innerHTML = STATES.map((s, i) =>
-  `<div class="frame"><div class="cap"><em>${i + 1}</em>${s.title}</div>${sheet(s.key)}</div>`).join('');
+  `<div class="frame"><div class="cap"><em>${i + 1}</em>${s.title}</div>${screen(s.key)}</div>`).join('');
 
-// live player
 const live = document.getElementById('live'), steps = document.getElementById('steps');
-let cur = 0, timer = null;
+let timer = null;
+const stop = () => { clearTimeout(timer); timer = null; };
+function sendFlow() { show(3); timer = setTimeout(() => { show(4); timer = setTimeout(() => show(5), 2200); }, 1800); }
 function show(i) {
-  cur = i; live.innerHTML = sheet(STATES[i].key);
-  [...steps.querySelectorAll('.step')].forEach((b, j) => b.classList.toggle('on', j === i));
-  const btns = live.querySelectorAll('.btn');
-  btns.forEach(b => b.addEventListener('click', () => {
-    stop();
-    const t = b.textContent.trim();
-    if (t.startsWith('Send')) { show(1); timer = setTimeout(() => { show(2); timer = setTimeout(() => show(3), 2200); }, 1800); }
-    else if (t.startsWith('Talk')) show(0);
-    else if (t.startsWith('Cancel')) show(0);
+  live.innerHTML = screen(STATES[i].key);
+  steps.querySelectorAll('.step').forEach((b, j) => b.classList.toggle('on', j === i));
+  live.querySelectorAll('[data-go]').forEach(el => el.addEventListener('click', () => {
+    stop(); const g = el.dataset.go; g === 'send' ? sendFlow() : show(+g);
   }));
 }
-function stop() { clearTimeout(timer); timer = null; }
 steps.innerHTML = STATES.map((s, i) =>
   `<button class="step" type="button" data-i="${i}"><span class="n">${i + 1}</span><span><b>${s.title}</b><span class="d">${s.d}</span></span></button>`).join('')
-  + `<button class="btn send play" type="button" id="play">▶ Play the whole flow</button>`;
+  + `<button class="pill play" type="button" id="play">▶ Play the whole flow</button>`;
 steps.querySelectorAll('.step').forEach(b => b.addEventListener('click', () => { stop(); show(+b.dataset.i); }));
 document.getElementById('play').addEventListener('click', () => {
-  stop(); show(0);
-  const seq = [2400, 1800, 2200]; let k = 0;
-  const next = () => { if (k < 3) timer = setTimeout(() => { show(++k); next(); }, seq[k]); };
-  next();
+  stop(); show(0); const gaps = [1200, 1400, 2600, 1800, 2200]; let k = 0;
+  const next = () => { if (k < 5) timer = setTimeout(() => { show(++k); next(); }, gaps[k]); }; next();
 });
 show(0);
 </script>
