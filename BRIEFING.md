@@ -83,7 +83,9 @@ Write `briefing/today` with ArtifactData `set` (pin `if_version` to the version 
   "did": ["what you changed since last run, one line each (from step 2); [] if nothing"],
   "cards": [
     {"id": "short-slug", "section": "do|soon|fyi", "title": "Short title",
-     "when": "Tue 10 Nov · 5:30pm", "lines": ["1 to 3 tiny lines"], "plan": "what you will do (starts after 'Luna will')"}
+     "when": "Tue 10 Nov · 5:30pm", "lines": ["1 to 3 tiny lines"],
+     "where": "In Calendar and TaskNotes · Home",
+     "update": "optional: one short note from Luna about what she changed or noticed (shows in a purple LUNA box)"}
   ]
 }
 ```
@@ -93,6 +95,7 @@ Write `briefing/today` with ArtifactData `set` (pin `if_version` to the version 
 - One card = one thing. Never the same thing in two sections.
 - `id`s stay the same for the same thing across days.
 - Aim for under 12 cards.
+- Cards no longer show a "Luna will" plan. Darren slides left = Done, right = Skip (saved as `remind` for tomorrow), or taps the middle to talk to Luna about the card.
 - **Pinned cards** (`ArtifactData list` on `pins`): Darren wants these front of mind. Always include a card with the same `id`
   every day, even if it would normally be dropped or is in known-facts. Refresh its lines/when if anything changed.
   The page shows it at the top, folded. Pinned cards don't count toward the 12.
