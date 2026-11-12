@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luna Swipe Cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Josefin+Sans:wght@200&family=Manrope:wght@500;700&display=swap">
+<style>
+:root {
+  --sky-top: #010205; --sky-mid: #03060f; --sky-low: #0b0d24;
+  --edge: rgba(190,200,255,.14);
+  --fg: #f1f2ff; --muted: #a3a8c8; --faint: #7d82a6;
+  --violet: #a99bff; --violet-deep: #6c5ce7; --moon: #f4ecd2; --green: #7fe0a8; --skip: #8fb8ff;
+  --script: "Josefin Sans","Segoe UI",system-ui,sans-serif;
+  --ui: "Manrope","Segoe UI",system-ui,sans-serif;
+  --body: "Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--sky-top); }
+body { margin: 0; min-height: 100vh; color: var(--fg); font: 16px/1.5 var(--body);
+  background: radial-gradient(90% 40% at 80% -5%, rgba(140,120,255,.13), transparent 70%), linear-gradient(180deg, var(--sky-top), var(--sky-mid) 55%, var(--sky-low)); }
+.wrap { max-width: 420px; margin: 0 auto; padding: 28px 16px 60px; }
+.intro h1 { font: 200 1.5rem/1 var(--script); letter-spacing: .5em; text-transform: uppercase; color: var(--moon); margin: 0 0 10px; }
+.intro p { margin: 0 0 6px; color: var(--muted); font-size: .92rem; }
+.opt { margin-top: 44px; }
+.opt > h2 { font: 700 1.05rem/1.3 var(--ui); margin: 0 0 4px; }
+.opt > h2 span { color: var(--violet); }
+.opt > p { margin: 0 0 14px; color: var(--muted); font-size: .9rem; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button:focus-visible { outline: 2px solid var(--violet); outline-offset: 3px; }
+svg { display: block; }
+
+.phone { position: relative; overflow: hidden; width: 100%; max-width: 380px; margin: 0 auto; border-radius: 36px; border: 1px solid rgba(190,200,255,.22);
+  background: linear-gradient(180deg, #05071a, #0a0c22); padding: 34px 14px 18px; min-height: 560px; }
+.phone::before { content: ""; position: absolute; top: 12px; left: 50%; width: 64px; height: 5px; margin-left: -32px; border-radius: 3px; background: rgba(255,255,255,.1); }
+.pips { display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; }
+.pips i { width: 26px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.12); transition: background .3s; }
+.pips i.done { background: var(--green); } .pips i.skip { background: var(--skip); } .pips i.now { background: var(--violet); }
+
+.stage { position: relative; }
+.card { position: relative; border-radius: 26px; border: 1px solid var(--edge); background: rgba(255,255,255,.045); padding: 22px 18px 18px; text-align: center; }
+.card .k { font: 700 .72rem var(--ui); letter-spacing: .22em; color: var(--violet); }
+.card h3 { font: 700 1.35rem/1.25 var(--ui); margin: 8px 0 6px; }
+.card .when { color: var(--muted); font-size: .95rem; } .card .when b { color: var(--violet); font-weight: 400; }
+.card .where { display: inline-flex; align-items: center; gap: 7px; margin-top: 8px; font-size: .82rem; color: var(--faint); }
+.card .where i { width: 7px; height: 7px; border-radius: 50%; background: var(--violet); box-shadow: 0 0 8px var(--violet); }
+.tick { display: block; margin: 18px auto 6px; width: 84px; height: 84px; border-radius: 50%; border: 2px solid rgba(169,155,255,.6); background: rgba(169,155,255,.05); transition: background .2s, box-shadow .2s; }
+.tick:hover { background: rgba(169,155,255,.12); box-shadow: 0 0 24px rgba(169,155,255,.3); }
+.hint { font-size: .8rem; color: var(--faint); }
+
+/* swipe track */
+.track { position: relative; margin-top: 18px; height: 60px; border-radius: 30px; border: 1px solid var(--edge); background: rgba(3,4,14,.55); overflow: hidden; touch-action: pan-y; user-select: none; }
+.track .fill { position: absolute; inset: 0; opacity: 0; transition: opacity .1s; }
+.track .fill.l { background: linear-gradient(90deg, rgba(127,224,168,.45), transparent 70%); }
+.track .fill.r { background: linear-gradient(270deg, rgba(143,184,255,.45), transparent 70%); }
+.track .side { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; gap: 6px; font: 700 .85rem var(--ui); color: var(--muted); pointer-events: none; }
+.track .side svg { width: 16px; height: 16px; }
+.track .side.l { left: 18px; color: var(--green); } .track .side.r { right: 18px; color: var(--skip); }
+.thumb { position: absolute; top: 4px; left: 50%; width: 52px; height: 52px; margin-left: -26px; border-radius: 50%; display: grid; place-items: center; color: #fff; cursor: grab;
+  background: radial-gradient(circle at 35% 30%, #c9bfff, #9a8af5 45%, #6c5ce7); box-shadow: 0 0 22px rgba(169,155,255,.5); touch-action: none; }
+.thumb.snap { transition: transform .3s cubic-bezier(.3,1.4,.5,1); }
+.thumb svg { width: 24px; height: 24px; }
+.under { margin-top: 8px; font-size: .74rem; color: var(--faint); }
+
+/* track styles per option */
+.t2 .thumb { width: auto; min-width: 96px; padding: 0 14px; margin-left: -48px; border-radius: 26px; gap: 6px; display: flex; align-items: center; justify-content: center; font: 700 .85rem var(--ui); }
+.t2 .thumb svg { width: 18px; height: 18px; }
+.t3 .track { height: 68px; border-radius: 34px; }
+.t3 .track::after { content: ""; position: absolute; left: 50%; top: 14px; bottom: 14px; width: 1px; background: var(--edge); }
+.t3 .thumb { width: 60px; height: 60px; margin-left: -30px; z-index: 1; animation: breathe 3.2s ease-in-out infinite; }
+.t3 .thumb svg { display: none; }
+@keyframes breathe { 50% { box-shadow: 0 0 34px rgba(169,155,255,.75); } }
+.t4 .track { border-radius: 18px; }
+.t4 .thumb { border-radius: 16px; width: 64px; margin-left: -32px; }
+.t5 .track { height: 52px; background: none; border: 0; }
+.t5 .track::before { content: ""; position: absolute; left: 14px; right: 14px; top: 50%; height: 2px; margin-top: -1px; background: linear-gradient(90deg, var(--green), rgba(255,255,255,.12) 40%, rgba(255,255,255,.12) 60%, var(--skip)); border-radius: 1px; }
+.t5 .thumb { top: 2px; width: 48px; height: 48px; margin-left: -24px; }
+.t5 .side { font-size: .78rem; } .t5 .side.l { left: 0; top: -26px; } .t5 .side.r { right: 0; top: -26px; }
+.t5 .track { overflow: visible; margin-top: 40px; }
+
+/* also today */
+.also { margin-top: 18px; }
+.also h4 { font: 700 .72rem var(--ui); letter-spacing: .2em; color: var(--faint); margin: 0 0 8px; }
+.row { display: flex; align-items: center; gap: 10px; padding: 11px 14px; margin-bottom: 8px; border-radius: 16px; border: 1px solid var(--edge); background: rgba(255,255,255,.03); font-size: .9rem; animation: rowin .35s ease both; }
+.row .dot { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.row .dot svg { width: 13px; height: 13px; color: #06210f; }
+.row.done .dot { background: var(--green); } .row.done .t { text-decoration: line-through; color: var(--faint); }
+.row.skip .dot { background: rgba(143,184,255,.2); border: 1px solid var(--skip); } .row.skip .dot svg { color: var(--skip); }
+.row .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .s { font: 500 .75rem var(--ui); color: var(--faint); }
+.row.wait { opacity: .6; } .row.wait .dot { border: 1.5px solid var(--faint); }
+@keyframes rowin { from { opacity: 0; transform: translateY(-6px); } }
+.clear { text-align: center; padding: 40px 0 10px; color: var(--muted); }
+.clear b { display: block; font: 700 1.2rem var(--ui); color: var(--fg); margin-bottom: 4px; }
+.reset { margin-top: 12px; font: 700 .8rem var(--ui); color: var(--violet); padding: 7px 16px; border: 1px solid rgba(169,155,255,.35); border-radius: 99px; }
+
+/* done = the same stardust as the live page */
+.card.dusting { animation: dustFade .7s ease-out forwards; pointer-events: none; }
+@keyframes dustFade { to { opacity: 0; filter: blur(8px); transform: scale(1.03); } }
+/* skip effects */
+.card.sk-drift { animation: drift .6s ease-in forwards; pointer-events: none; }
+@keyframes drift { to { opacity: 0; transform: translateX(115%) rotate(5deg); } }
+.card.sk-eclipse { pointer-events: none; overflow: hidden; }
+.card.sk-eclipse::after { content: ""; position: absolute; top: 50%; left: -60%; width: 120%; aspect-ratio: 1; border-radius: 50%; transform: translateY(-50%);
+  background: radial-gradient(circle, #02030b 58%, rgba(143,184,255,.55) 61%, transparent 66%); animation: eclipse .75s ease-in-out forwards; }
+@keyframes eclipse { to { left: 40%; } }
+.card.sk-eclipse > * { animation: dim .75s ease forwards; } @keyframes dim { to { opacity: .1; } }
+.card.sk-orbit { animation: orbit .7s cubic-bezier(.5,0,.7,1) forwards; pointer-events: none; transform-origin: 50% 50%; }
+@keyframes orbit { 40% { transform: translate(40px,-20px) scale(.7) rotate(8deg); } to { opacity: 0; transform: translate(-20px,260px) scale(.2) rotate(-10deg); } }
+.card.sk-set { animation: moonset .8s ease-in forwards; pointer-events: none; }
+@keyframes moonset { to { opacity: 0; transform: translateY(70px) scale(.94); filter: blur(4px) hue-rotate(40deg); } }
+.card.sk-mist { animation: mist .7s ease-out forwards; pointer-events: none; }
+@keyframes mist { to { opacity: 0; filter: blur(10px) saturate(.3); transform: scale(.97); } }
+.ring { position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px; border-radius: 50%; border: 2px solid var(--skip); pointer-events: none; animation: ring .8s ease-out forwards; }
+@keyframes ring { to { transform: scale(9); opacity: 0; } }
+.toast { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); font: 700 .8rem var(--ui); padding: 8px 14px; border-radius: 99px; background: rgba(8,10,28,.92); border: 1px solid var(--edge); white-space: nowrap; animation: rowin .3s ease both; z-index: 4; }
+.toast.d { color: var(--green); } .toast.s { color: var(--skip); }
+
+/* Ask Luna sheet */
+.sheet { position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 5; border-radius: 26px; border: 1px solid rgba(169,155,255,.3);
+  background: linear-gradient(180deg, #1c1d3d, #141530); padding: 16px; text-align: center; transform: translateY(110%); transition: transform .35s cubic-bezier(.2,.9,.3,1); }
+.sheet.open { transform: none; }
+.sheet .about { display: inline-flex; max-width: calc(100% - 50px); gap: 6px; align-items: center; font: 500 .78rem var(--ui); color: var(--violet); background: rgba(169,155,255,.12); border: 1px solid rgba(169,155,255,.22); border-radius: 14px; padding: 4px 11px; }
+.sheet .about em { font-style: normal; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sheet .x { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--edge); display: grid; place-items: center; color: var(--muted); }
+.sheet .x svg { width: 15px; height: 15px; }
+.orb { width: 78px; height: 78px; margin: 16px auto 10px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c9bfff, #9a8af5 45%, #7462e0); box-shadow: 0 0 34px rgba(169,155,255,.45); animation: breathe 3.2s ease-in-out infinite; }
+.sheet .say { color: var(--muted); font-size: .9rem; }
+.sheet .chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 10px; }
+.sheet .chips span { font: 500 .75rem var(--ui); color: var(--muted); border: 1px solid var(--edge); border-radius: 99px; padding: 4px 10px; }
+.sheet .bar { display: flex; gap: 8px; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(190,200,255,.1); }
+.sheet .plus { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--edge); color: var(--muted); display: grid; place-items: center; flex: none; }
+.sheet .plus svg, .sheet .mic svg { width: 18px; height: 18px; }
+.sheet .msg { flex: 1; height: 38px; border-radius: 19px; border: 1px solid var(--edge); background: rgba(255,255,255,.05); color: var(--faint); font-size: .9rem; display: flex; align-items: center; padding: 0 14px; }
+.sheet .mic { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, var(--violet), var(--violet-deep)); flex: none; }
+
+#fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9; }
+@media (prefers-reduced-motion: reduce) { .card[class*="sk-"], .card.dusting, .card.sk-eclipse::after, .card.sk-eclipse > * { animation-duration: .01s !important; } }
+</style>
+</head>
+<body>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="wrap">
+  <div class="intro">
+    <h1>Luna</h1>
+    <p>Round 2: the "one at a time" card with the big circle, plus a swipe bar.</p>
+    <p>Slide <b style="color:var(--green)">left = Done</b> (the same stardust as now). Slide <b style="color:var(--skip)">right = Skip</b> (a different effect in each option). Tap the middle = talk to Luna about this task.</p>
+  </div>
+  <div id="opts"></div>
+</div>
+
+<script>
+const I = {
+  moon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>',
+  mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+  spark: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/><circle cx="19" cy="19" r="1.6"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
+  right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  later: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
+};
+const TASKS = [
+  { t: 'Put the recycling bins out', d: 'Tonight', w: '8pm · Blue and green bins', s: 'In Calendar and TaskNotes · Home' },
+  { t: 'Reply to the dentist', d: 'Today', w: '2pm · Confirm the check-up', s: 'Email from Smile Dental · draft ready' },
+  { t: 'Renew the car insurance', d: 'Mon 16 Nov', w: 'In 4 days', s: 'In TaskNotes · Admin' }
+];
+const OPTS = [
+  { n: 'Moon thumb · Drift away', p: 'Pill bar with the moon in the middle. Skip: the card drifts off to the right like a cloud.', skip: 'drift', cls: 't1', thumb: I.moon },
+  { n: 'Ask Luna pill · Eclipse', p: 'The middle says "Ask Luna" with a mic, so it is obvious. Skip: a shadow passes over the card like an eclipse.', skip: 'eclipse', cls: 't2', thumb: I.mic + 'Ask Luna' },
+  { n: 'Talk orb · Back in orbit', p: 'The middle is a mini version of the talk orb and it breathes. Skip: the card swings round and drops to the back of the queue.', skip: 'orbit', cls: 't3', thumb: '' },
+  { n: 'Chat key · Moonset', p: 'Squarer, calmer bar with a chat icon. Skip: the card sinks down and turns blue, like the moon setting.', skip: 'set', cls: 't4', thumb: I.chat },
+  { n: 'Thin line · Blue ripple', p: 'The lightest look: just a line with the orb on it. Skip: a soft blue ripple and the card mists away.', skip: 'mist', cls: 't5', thumb: I.spark }
+];
+
+const host = document.getElementById('opts');
+OPTS.forEach((o, i) => {
+  const s = document.createElement('section'); s.className = 'opt ' + o.cls;
+  s.innerHTML = `<h2><span>Option ${i + 1}</span> – ${o.n}</h2><p>${o.p}</p><div class="phone"></div>`;
+  host.appendChild(s);
+  setup(s.querySelector('.phone'), o);
+});
+
+function setup(ph, o) {
+  ph.st = { i: 0, res: [] };
+  ph.innerHTML = `<div class="pips">${TASKS.map(() => '<i></i>').join('')}</div><div class="stage"></div><div class="also"><h4>ALSO TODAY</h4><div class="rows"></div></div>
+  <div class="sheet"><button class="x" aria-label="Close">${I.x}</button><div class="about">About <em></em></div><div class="orb"></div><div class="say">Tap to speak</div>
+  <div class="chips"><span>Move it to tomorrow</span><span>Add a note</span><span>Drop it</span></div>
+  <div class="bar"><button class="plus" aria-label="Add a photo">${I.plus}</button><div class="msg">Message Luna…</div><button class="mic" aria-label="Talk">${I.mic}</button></div></div>`;
+  ph.querySelector('.x').onclick = () => ph.querySelector('.sheet').classList.remove('open');
+  draw(ph, o);
+}
+
+function draw(ph, o) {
+  const st = ph.st, stage = ph.querySelector('.stage');
+  ph.querySelectorAll('.pips i').forEach((p, k) => p.className = st.res[k] || (k === st.i ? 'now' : ''));
+  const rows = ph.querySelector('.rows'); rows.innerHTML = '';
+  TASKS.forEach((t, k) => {
+    if (k === st.i) return;
+    const r = st.res[k]; const div = document.createElement('div');
+    div.className = 'row ' + (r || 'wait');
+    div.innerHTML = `<span class="dot">${r === 'done' ? I.check : r === 'skip' ? I.later : ''}</span><span class="t"></span><span class="s">${r === 'done' ? 'Done' : r === 'skip' ? 'Later' : t.d}</span>`;
+    div.querySelector('.t').textContent = t.t; rows.appendChild(div);
+  });
+  if (st.i >= TASKS.length) {
+    stage.innerHTML = `<div class="clear"><b>All clear for now</b>Luna has updated TaskNotes and Calendar.<br><button class="reset">Try again</button></div>`;
+    stage.querySelector('.reset').onclick = () => { st.i = 0; st.res = []; draw(ph, o); };
+    return;
+  }
+  const t = TASKS[st.i];
+  stage.innerHTML = `<article class="card"><div class="k">NEXT UP</div><h3></h3><div class="when"><b>${t.d}</b> · ${t.w}</div><div class="where"><i></i><span></span></div>
+    <button class="tick" aria-label="Mark done"></button><div class="hint">Tap the circle or slide left when it's done</div>
+    <div class="track"><div class="fill l"></div><div class="fill r"></div>
+      <div class="side l">${I.left}Done</div><div class="side r">Skip${I.right}</div>
+      <button class="thumb" aria-label="Talk to Luna about this task">${o.thumb}</button></div>
+    <div class="under">Tap the middle to tell Luna something</div></article>`;
+  const card = stage.querySelector('.card');
+  card.querySelector('h3').textContent = t.t; card.querySelector('.where span').textContent = t.s;
+  card.querySelector('.tick').onclick = () => finish(ph, o, card, 'done');
+  swipe(ph, o, card);
+}
+
+function swipe(ph, o, card) {
+  const tr = card.querySelector('.track'), th = card.querySelector('.thumb');
+  const fl = tr.querySelector('.fill.l'), fr = tr.querySelector('.fill.r');
+  let x0 = null, dx = 0, moved = false;
+  const max = () => tr.clientWidth / 2 - th.offsetWidth / 2 - 4;
+  th.addEventListener('pointerdown', e => { x0 = e.clientX; dx = 0; moved = false; th.classList.remove('snap'); th.setPointerCapture(e.pointerId); });
+  th.addEventListener('pointermove', e => {
+    if (x0 === null) return;
+    dx = Math.max(-max(), Math.min(max(), e.clientX - x0)); if (Math.abs(dx) > 6) moved = true;
+    th.style.transform = `translateX(${dx}px)`;
+    fl.style.opacity = Math.max(0, -dx / max()); fr.style.opacity = Math.max(0, dx / max());
+  });
+  const up = () => {
+    if (x0 === null) return; x0 = null;
+    if (!moved) { openSheet(ph); return; }
+    if (dx < -max() * .65) { th.style.transform = `translateX(${-max()}px)`; finish(ph, o, card, 'done'); return; }
+    if (dx > max() * .65) { th.style.transform = `translateX(${max()}px)`; finish(ph, o, card, 'skip'); return; }
+    th.classList.add('snap'); th.style.transform = ''; fl.style.opacity = fr.style.opacity = 0;
+  };
+  th.addEventListener('pointerup', up); th.addEventListener('pointercancel', up);
+  th.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') finish(ph, o, card, 'done');
+    if (e.key === 'ArrowRight') finish(ph, o, card, 'skip');
+  });
+}
+
+function openSheet(ph) {
+  ph.querySelector('.sheet em').textContent = TASKS[ph.st.i].t;
+  ph.querySelector('.sheet').classList.add('open');
+}
+
+function finish(ph, o, card, kind) {
+  if (card.dataset.gone) return; card.dataset.gone = 1;
+  const st = ph.st, t = TASKS[st.i];
+  if (kind === 'done') { stardust(card); card.classList.add('dusting'); }
+  else {
+    if (o.skip === 'drift') streak(card);
+    if (o.skip === 'mist') { const r = document.createElement('div'); r.className = 'ring'; card.appendChild(r); mist(card); }
+    card.classList.add('sk-' + o.skip);
+  }
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + (kind === 'done' ? 'd' : 's');
+  toast.textContent = kind === 'done' ? 'Ticked off in TaskNotes · Undo' : 'Back tomorrow · Undo';
+  setTimeout(() => {
+    st.res[st.i] = kind; st.i++;
+    draw(ph, o); ph.appendChild(toast); setTimeout(() => toast.remove(), 2200);
+  }, kind === 'done' ? 700 : 800);
+}
+
+// Stardust: copied from the live Luna page (app/luna.html) so Done looks exactly the same
+const fx = document.getElementById('fx'), fc = fx.getContext('2d');
+let parts = [], running = false;
+function sizeFx() { const d = devicePixelRatio || 1; fx.width = innerWidth * d; fx.height = innerHeight * d; fc.setTransform(d, 0, 0, d, 0, 0); }
+sizeFx(); addEventListener('resize', sizeFx);
+function stardust(card) {
+  const r = card.getBoundingClientRect();
+  for (let i = 0; i < 180; i++) parts.push({ x: r.left + Math.random() * r.width, y: r.top + Math.random() * r.height,
+    vx: (Math.random() - .3) * 1.6, vy: -Math.random() * 2.2 - .3, life: 0, max: 50 + Math.random() * 50,
+    s: .6 + Math.random() * 1.8, c: Math.random() > .5 ? '#cfc6ff' : '#fff6dc' });
+  run();
+}
+// Skip particles (blue, different from Done)
+function streak(card) {
+  const r = card.getBoundingClientRect();
+  for (let i = 0; i < 70; i++) parts.push({ x: r.left + Math.random() * r.width, y: r.top + Math.random() * r.height,
+    vx: 3 + Math.random() * 4, vy: (Math.random() - .5) * .4, g: 0, life: 0, max: 30 + Math.random() * 30, s: .6 + Math.random() * 1.2, c: '#8fb8ff' });
+  run();
+}
+function mist(card) {
+  const r = card.getBoundingClientRect();
+  for (let i = 0; i < 90; i++) parts.push({ x: r.left + Math.random() * r.width, y: r.top + Math.random() * r.height,
+    vx: (Math.random() - .5) * .6, vy: Math.random() * 1.2 + .2, g: 0, life: 0, max: 50 + Math.random() * 40, s: 1 + Math.random() * 2.5, c: '#8fb8ff' });
+  run();
+}
+function run() { if (!running) { running = true; requestAnimationFrame(tick); } }
+function tick() {
+  fc.clearRect(0, 0, innerWidth, innerHeight);
+  parts = parts.filter(p => p.life < p.max);
+  for (const p of parts) {
+    p.life++; const k = p.life / p.max;
+    p.x += p.vx; p.y += p.vy; p.vy -= (p.g ?? .02);
+    fc.globalAlpha = (1 - k) * (.6 + .4 * Math.sin(p.life * .5));
+    fc.fillStyle = p.c; fc.beginPath(); fc.arc(p.x, p.y, p.s, 0, 6.283); fc.fill();
+  }
+  if (parts.length) requestAnimationFrame(tick); else { running = false; fc.clearRect(0, 0, innerWidth, innerHeight); }
+}
+</script>
+</body>
+</html>
