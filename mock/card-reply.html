@@ -1,0 +1,168 @@
+<title>Luna Card Replies</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: 3 ideas, each a row of two phone frames: the clean card, then what opens when you tap. Luna's own night look. */
+:root {
+  color-scheme: dark;
+  --sky-top: #03050f; --sky-mid: #0a1130; --sky-low: #1d1d45;
+  --glass: rgba(255,255,255,.04); --glass-hi: rgba(255,255,255,.075); --edge: rgba(190,200,255,.14);
+  --fg: #f1f2ff; --muted: #a3a8c8; --violet: #a99bff; --violet-deep: #6c5ce7; --green: #7fe0a8;
+  --ui: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--sky-top); }
+body { margin: 0; color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.5;
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-mid) 55%, var(--sky-low)) fixed;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 60px; }
+.wrap { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
+h1 { font-family: var(--ui); font-weight: 800; font-size: 1.6rem; margin: 0; }
+.intro { color: var(--muted); margin: 6px 0 0; max-width: 52ch; }
+.idea { display: flex; flex-direction: column; gap: 14px; }
+.idea h2 { font-family: var(--ui); font-weight: 800; font-size: 1.15rem; margin: 0; display: flex; gap: 10px; align-items: center; }
+.idea h2 .tag { font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: #0b0d1c; background: var(--violet); border-radius: 99px; padding: 3px 9px; }
+.idea p.why { margin: 0; color: var(--muted); max-width: 60ch; }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.frame { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.cap { font-family: var(--ui); font-weight: 700; font-size: .85rem; color: var(--muted); }
+
+/* phone */
+.screen { position: relative; height: 520px; border-radius: 24px; overflow: hidden; border: 1px solid var(--edge);
+  background: linear-gradient(180deg, #0c1226, #1b1d3a); padding: 14px; }
+.card { background: linear-gradient(160deg, var(--glass-hi), var(--glass)); border: 1px solid var(--edge); border-radius: 20px; padding: 16px;
+  display: flex; flex-direction: column; gap: 11px; position: relative; transition: all .3s; }
+.card h3 { margin: 0; font-family: var(--ui); font-weight: 700; font-size: 1.05rem; padding-right: 30px; }
+.when { font-family: var(--ui); font-size: .85rem; color: var(--violet); margin-top: -7px; }
+.card ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: .9rem; }
+.plan { border-radius: 12px; padding: 9px 12px; font-size: .88rem; background: rgba(169,155,255,.09); border: 1px solid rgba(169,155,255,.16); }
+.plan b { font-family: var(--ui); color: var(--violet); }
+.btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.btns.five { grid-template-columns: repeat(4, 1fr) 44px; }
+.b { font: 700 .82rem var(--ui); border-radius: 12px; padding: 10px 2px; border: 1px solid var(--edge); background: rgba(255,255,255,.03); color: var(--fg); text-align: center; }
+.b.chat { display: grid; place-items: center; padding: 0; background: rgba(169,155,255,.14); border-color: rgba(169,155,255,.4); color: var(--violet); }
+.b svg, .talk svg, .chip svg { width: 18px; height: 18px; }
+.talk { display: flex; align-items: center; justify-content: center; gap: 8px; font: 700 .9rem var(--ui); color: var(--violet);
+  border: 1px dashed rgba(169,155,255,.4); border-radius: 12px; padding: 10px; background: rgba(169,155,255,.06); }
+.pin { position: absolute; top: 12px; right: 12px; color: #6f7596; }
+.tapme { position: absolute; width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--fg); opacity: .8; animation: tap 1.6s ease-out infinite; pointer-events: none; }
+@keyframes tap { 0% { transform: scale(.6); opacity: .9; } 100% { transform: scale(1.5); opacity: 0; } }
+.card.linked { border-color: rgba(169,155,255,.6); box-shadow: 0 0 0 1px rgba(169,155,255,.2), 0 0 30px -6px rgba(169,155,255,.55); }
+.linkflag { font: 700 .72rem var(--ui); color: var(--violet); display: flex; gap: 6px; align-items: center; }
+.linkflag i { width: 7px; height: 7px; border-radius: 50%; background: var(--violet); box-shadow: 0 0 8px var(--violet); animation: blink 1.4s infinite; }
+@keyframes blink { 50% { opacity: .3; } }
+.hl { outline: 2px solid var(--fg); outline-offset: 3px; }
+
+/* dock */
+.dock { position: absolute; left: 10px; right: 10px; bottom: 10px; display: flex; justify-content: space-between; align-items: end; }
+.prog { padding: 9px 14px; border-radius: 22px; background: rgba(20,22,45,.92); border: 1px solid var(--edge); font-size: .76rem; color: var(--muted); }
+.prog .segs { display: flex; gap: 3px; margin-bottom: 3px; } .prog .segs i { width: 9px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.18); } .prog .segs i.on { background: var(--violet); }
+.ask { height: 48px; padding: 0 18px; border-radius: 24px; font: 800 .9rem var(--ui); color: #fff; display: flex; gap: 8px; align-items: center;
+  background: linear-gradient(135deg, #a99bff, #6c5ce7); box-shadow: 0 0 26px rgba(143,125,255,.55); }
+.ask svg { width: 17px; height: 17px; }
+
+/* panel */
+.panel { position: absolute; left: 8px; right: 8px; bottom: 8px; border-radius: 22px; padding: 12px; display: flex; flex-direction: column; gap: 8px;
+  background: linear-gradient(160deg, #262a45, #13172b); border: 1px solid rgba(169,155,255,.32); box-shadow: 0 0 50px -12px rgba(169,155,255,.6); }
+.ptop { display: flex; gap: 8px; align-items: center; }
+.chip { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 7px 8px 7px 12px; border-radius: 14px;
+  background: rgba(169,155,255,.12); border: 1px solid rgba(169,155,255,.35); font: 700 .8rem var(--ui); }
+.chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+.chip small { display: block; font-weight: 600; color: var(--violet); font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; }
+.chip .x { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: var(--muted); background: rgba(255,255,255,.06); }
+.chip .x svg { width: 12px; height: 12px; }
+.mini { width: 34px; height: 34px; flex: none; border-radius: 50%; border: 1px solid var(--edge); display: grid; place-items: center; color: var(--muted); }
+.mini svg { width: 16px; height: 16px; }
+.mcard { border-radius: 14px; padding: 10px 12px; background: rgba(255,255,255,.05); border: 1px solid var(--edge); font-size: .82rem; color: var(--muted); }
+.mcard b { font-family: var(--ui); color: var(--fg); display: block; font-size: .9rem; }
+.voice { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 4px 0 4px; }
+.orb { width: 72px; height: 72px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff7, transparent 45%), linear-gradient(135deg, #a99bff, #6c5ce7);
+  box-shadow: 0 0 40px -6px var(--violet); animation: breathe 2.6s ease-in-out infinite; }
+@keyframes breathe { 50% { transform: scale(1.05); } }
+.hint { font: 600 .82rem var(--ui); color: var(--muted); text-align: center; }
+.sugs { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.sug { font: 700 .74rem var(--ui); padding: 6px 10px; border-radius: 99px; border: 1px solid var(--edge); background: rgba(255,255,255,.04); color: var(--fg); }
+.r2 { display: flex; gap: 8px; align-items: center; border-top: 1px solid var(--edge); padding-top: 10px; }
+.ib { width: 38px; height: 38px; flex: none; border-radius: 50%; border: 1px solid var(--edge); background: rgba(255,255,255,.06); display: grid; place-items: center; color: var(--muted); }
+.ib.go { background: linear-gradient(135deg, #a99bff, #6c5ce7); color: #fff; border: 0; }
+.ib svg { width: 18px; height: 18px; }
+.field { flex: 1; min-width: 0; height: 38px; border-radius: 19px; border: 1px solid var(--edge); background: rgba(255,255,255,.045); color: #767b9e; font-size: .85rem;
+  display: flex; align-items: center; padding: 0 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.wins { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.wins li { padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid var(--edge); }
+.wins b { font-family: var(--ui); }
+h2.sec { font-family: var(--ui); font-weight: 700; font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; display: flex; gap: 10px; align-items: center; }
+h2.sec::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--edge), transparent); }
+@media (max-width: 640px) { .pair { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Luna Card Replies</h1>
+    <p class="intro">No reply box on the cards. One tap opens Ask Luna, already linked to that card. 3 ways to do the tap.</p>
+  </header>
+  <div id="ideas"></div>
+  <section>
+    <h2 class="sec">Same in all 3</h2>
+    <ul class="wins">
+      <li><b>Cards stay clean.</b> No reply box, no "Do it now".</li>
+      <li><b>Panel shows the link.</b> A chip at the top says which card you're talking about. Tap ✕ to unlink and chat normally.</li>
+      <li><b>The card glows</b> while it's linked, so you can see it behind the panel.</li>
+      <li><b>Send is just the arrow</b>, same as Ask Luna now. Nothing bossy.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+const I = {
+  chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 5h14v10H10l-5 4z"/></svg>',
+  mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>',
+  link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(35deg)"><path d="M9 4h6l-1 6 3 3v2H7v-2l3-3z"/><path d="M12 15v6"/></svg>'
+};
+const C = { title: 'Sort Sky and pump up tyre', when: 'Today', lines: ['Both starred TaskNotes tasks are due today', 'Sky delivery is Sat 14 Nov'], plan: 'tick them off in TaskNotes if you reply "done".' };
+const head = (linked) => `${linked ? '<div class="linkflag"><i></i>Talking to Luna about this</div>' : ''}
+  <span class="pin">${I.pin}</span><h3>${C.title}</h3><div class="when">${C.when}</div>
+  <ul>${C.lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+const plan = `<div class="plan"><b>Luna will</b> ${C.plan}</div>`;
+const four = (extra = '') => `<div class="btns ${extra ? 'five' : ''}"><span class="b">OK</span><span class="b">Done</span><span class="b">Remind ▾</span><span class="b">Drop</span>${extra}</div>`;
+const dock = `<div class="dock"><div class="prog"><div class="segs"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>2 of 8 answered</div><div class="ask">${I.chat}Ask Luna</div></div>`;
+const chip = `<div class="chip">${I.link}<span><small>About this card</small>${C.title}</span><span class="x">${I.x}</span></div>`;
+const r2 = (ph) => `<div class="r2"><span class="ib">${I.plus}</span><span class="field">${ph}</span><span class="ib go">${I.mic}</span></div>`;
+const sugs = `<div class="sugs"><span class="sug">All in calendar?</span><span class="sug">Move to tomorrow</span><span class="sug">Already done</span></div>`;
+
+const IDEAS = [
+  { name: 'Talk button under the buttons', tag: 'My pick', why: 'A soft, dashed "Talk to Luna about this" line under OK / Done / Remind / Drop. Easy to spot, clearly not one of the 4 quick answers.',
+    card: `<div class="card">${head()}${plan}${four()}<div class="talk hl">${I.chat}Talk to Luna about this</div></div>`,
+    tap: { right: '50%', bottom: '0' },
+    open: `<div class="card linked">${head(true)}</div>
+      <div class="panel"><div class="ptop">${chip}<span class="mini">${I.down}</span></div>
+      <div class="voice"><div class="orb"></div><div class="hint">Tap to speak about this card</div></div>${sugs}${r2('Ask about this card…')}</div>` },
+  { name: '5th button in the row', tag: '', why: 'A small chat bubble sits at the end of the 4 buttons. Tidiest card of the 3, but a bit easier to miss.',
+    card: `<div class="card">${head()}${plan}${four(`<span class="b chat hl">${I.chat}</span>`)}</div>`,
+    open: `<div class="card linked">${head(true)}</div>
+      <div class="panel"><div class="ptop">${chip}<span class="mini">${I.down}</span></div>
+      <div class="voice"><div class="orb"></div><div class="hint">Tap to speak about this card</div></div>${r2('Ask about this card…')}</div>` },
+  { name: 'Tap the card itself', tag: '', why: 'Tap anywhere on the card (not a button) and Ask Luna opens with a mini copy of the card on top. Cleanest look, but you have to know it\'s there.',
+    card: `<div class="card hl">${head()}${plan}${four()}</div>`,
+    open: `<div class="card linked">${head(true)}</div>
+      <div class="panel"><div class="ptop"><div class="chip" style="background:none;border:0;padding-left:2px">${I.link}<span><small>About this card</small></span></div><span class="mini">${I.down}</span></div>
+      <div class="mcard"><b>${C.title}</b>${C.when} · ${C.lines[1]}</div>
+      <div class="voice"><div class="orb"></div><div class="hint">Tap to speak about this card</div></div>${r2('Ask about this card…')}</div>` }
+];
+
+document.getElementById('ideas').innerHTML = IDEAS.map((d, i) => `
+  <section class="idea">
+    <h2>${i + 1}. ${d.name}${d.tag ? `<span class="tag">${d.tag}</span>` : ''}</h2>
+    <p class="why">${d.why}</p>
+    <div class="pair">
+      <div class="frame"><div class="cap">The card (white ring = what you tap)</div><div class="screen">${d.card}${dock}</div></div>
+      <div class="frame"><div class="cap">After you tap</div><div class="screen">${d.open}</div></div>
+    </div>
+  </section>`).join('<div style="height:8px"></div>');
+</script>
