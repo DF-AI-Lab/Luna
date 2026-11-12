@@ -703,7 +703,7 @@ function wire(card) {
   lab.append(inp); chips.append(lab); sheet.append(chips);
   const ta = el('textarea'); ta.id = 'reply-' + id; ta.placeholder = 'Reply to this card…'; ta.setAttribute('aria-label', 'Reply to this card');
   const row = el('div', 'replyrow');
-  const mic = el('button', 'ib mic'); mic.type = 'button'; mic.hidden = !SpeechRec; mic.setAttribute('aria-label', 'Speak your reply');
+  const mic = el('button', 'ib mic'); mic.type = 'button'; mic.hidden = !SpeechRec && !cardDict; mic.setAttribute('aria-label', 'Speak your reply');
   mic.innerHTML = MIC_SVG + '<span class="bars"><i></i><i></i><i></i></span>';
   const go = el('button', 'go', 'Do it now ➤'); go.type = 'button'; go.hidden = true;
   // Pictures to show Luna
@@ -879,7 +879,30 @@ document.getElementById('send').onclick = () => save(false);
 // Voice: dictate into a card's reply box
 const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null;
+// Card mics use Claude's dictation (same as Ask Luna); the browser's own speech is only a fallback
+let cardDict = null, dictEnd = null;
+(async () => { if (!window.claude) return; try { cardDict = await window.claude.use('dictation'); } catch (e) {} if (cardDict) document.querySelectorAll('.card .mic').forEach(m => m.hidden = false); })();
+function cardSay(ta, msg) { const st = ta.closest('.card').querySelector('.status'); st.hidden = false; st.className = 'status bad'; st.textContent = msg; }
+function listenDict(ta, mic) {
+  if (dictEnd) { cardDict.stop().catch(() => {}); return; }
+  let fixed = ta.value.trim();
+  const put = partial => { ta.value = fixed + (partial ? (fixed ? ' ' : '') + partial.trim() : ''); ta.dispatchEvent(new Event('input')); };
+  const offs = [];
+  const end = () => { offs.forEach(f => { try { f(); } catch (e) {} }); offs.length = 0; dictEnd = null; mic.classList.remove('live'); put(''); };
+  offs.push(cardDict.onPartial(({ text }) => put(text)));
+  offs.push(cardDict.onFinal(({ text }) => { fixed = fixed ? fixed + (/^\s/.test(text) || /\s$/.test(fixed) ? '' : ' ') + text : text.trimStart(); put(''); }));
+  offs.push(cardDict.onState(({ state }) => { if (state === 'idle' && dictEnd) end(); }));
+  dictEnd = end; mic.classList.add('live');
+  cardDict.start({ language: 'en-GB' }).catch(e => {
+    if (dictEnd) end();
+    const code = e && e.code;
+    if (code === 'not_granted') cardSay(ta, "Mic is off for Luna. Turn it on in this page's Permissions, or use your keyboard's 🎤.");
+    else if (code === 'unavailable') { cardDict = null; cardSay(ta, "Voice isn't available here. Use the 🎤 on your keyboard instead."); }
+    else if (code !== 'stopped' && code !== 'dismissed') cardSay(ta, "Mic didn't start. Tap it to try again.");
+  });
+}
 function listen(ta, mic) {
+  if (cardDict) return listenDict(ta, mic);
   if (rec) { rec.stop(); return; }
   try { rec = new SpeechRec(); } catch (e) { mic.hidden = true; return; }
   rec.lang = 'en-GB'; rec.interimResults = true; rec.continuous = false;
