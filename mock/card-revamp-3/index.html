@@ -49,6 +49,15 @@ svg { display: block; }
 .tick:hover { background: rgba(169,155,255,.12); box-shadow: 0 0 24px rgba(169,155,255,.3); }
 .hint { font-size: .8rem; color: var(--faint); }
 
+/* update from Luna */
+.upd { display: flex; gap: 10px; align-items: flex-start; text-align: left; margin: 14px 0 2px; padding: 11px 13px; border-radius: 16px;
+  background: linear-gradient(135deg, rgba(169,155,255,.14), rgba(169,155,255,.04)); border: 1px solid rgba(169,155,255,.22); font-size: .86rem; line-height: 1.4; color: #d9d6ff; }
+.upd .av { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: #fff;
+  background: radial-gradient(circle at 35% 30%, #c9bfff, #9a8af5 45%, #6c5ce7); box-shadow: 0 0 10px rgba(169,155,255,.5); }
+.upd .av svg { width: 13px; height: 13px; }
+.upd b { display: block; font: 700 .7rem var(--ui); letter-spacing: .14em; color: var(--violet); margin-bottom: 1px; }
+.row .t small { display: block; font-size: .76rem; color: var(--green); text-decoration: none; }
+.row.skip .t small { color: var(--skip); }
 /* swipe track */
 .track { position: relative; margin-top: 18px; height: 60px; border-radius: 30px; border: 1px solid var(--edge); background: rgba(3,4,14,.55); overflow: hidden; touch-action: pan-y; user-select: none; }
 .track .fill { position: absolute; inset: 0; opacity: 0; transition: opacity .1s; }
@@ -164,9 +173,9 @@ const I = {
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
 };
 const TASKS = [
-  { t: 'Put the recycling bins out', d: 'Tonight', w: '8pm · Blue and green bins', s: 'In Calendar and TaskNotes · Home' },
-  { t: 'Reply to the dentist', d: 'Today', w: '2pm · Confirm the check-up', s: 'Email from Smile Dental · draft ready' },
-  { t: 'Renew the car insurance', d: 'Mon 16 Nov', w: 'In 4 days', s: 'In TaskNotes · Admin' }
+  { t: 'Put the recycling bins out', d: 'Tonight', w: '8pm · Blue and green bins', s: 'In Calendar and TaskNotes · Home', u: 'Moved to 8pm after you said "later". Calendar updated too.', r: 'Ticked off in TaskNotes · calendar marked ✅' },
+  { t: 'Reply to the dentist', d: 'Today', w: '2pm · Confirm the check-up', s: 'Email from Smile Dental', u: 'I drafted a reply in Gmail saying Tuesday 2pm works. Check it and press send.', r: 'Draft left in Gmail for you to send' },
+  { t: 'Renew the car insurance', d: 'Mon 16 Nov', w: 'In 4 days', s: 'In TaskNotes · Admin', r: 'Back tomorrow' }
 ];
 const OPTS = [
   { n: 'Thin line · Blue ripple (no circle)', p: 'Option 5 with the big circle and its hint removed. Slide left = Done, right = Skip, tap the orb = talk to Luna.', skip: 'mist', cls: 't5', thumb: I.spark }
@@ -179,6 +188,9 @@ OPTS.forEach((o, i) => {
   host.appendChild(s);
   setup(s.querySelector('.phone'), o);
 });
+{ const s = document.createElement('section'); s.className = 'opt t5';
+  s.innerHTML = `<h2><span>After a swipe</span> – how Luna's updates look</h2><p>Bins were slid to Done. Luna's note sits on the next card (purple box with the moon), and finished ones say what Luna did.</p><div class="phone"></div>`;
+  host.appendChild(s); const ph = s.querySelector('.phone'); setup(ph, OPTS[0]); ph.st = { i: 1, res: ['done'] }; draw(ph, OPTS[0]); }
 
 function setup(ph, o) {
   ph.st = { i: 0, res: [] };
@@ -199,7 +211,9 @@ function draw(ph, o) {
     const r = st.res[k]; const div = document.createElement('div');
     div.className = 'row ' + (r || 'wait');
     div.innerHTML = `<span class="dot">${r === 'done' ? I.check : r === 'skip' ? I.later : ''}</span><span class="t"></span><span class="s">${r === 'done' ? 'Done' : r === 'skip' ? 'Later' : t.d}</span>`;
-    div.querySelector('.t').textContent = t.t; rows.appendChild(div);
+    div.querySelector('.t').textContent = t.t;
+    if (r) { const sm = document.createElement('small'); sm.textContent = 'Luna: ' + t.r; div.querySelector('.t').appendChild(sm); div.querySelector('.t').style.textDecoration = 'none'; }
+    rows.appendChild(div);
   });
   if (st.i >= TASKS.length) {
     stage.innerHTML = `<div class="clear"><b>All clear for now</b>Luna has updated TaskNotes and Calendar.<br><button class="reset">Try again</button></div>`;
@@ -207,13 +221,14 @@ function draw(ph, o) {
     return;
   }
   const t = TASKS[st.i];
-  stage.innerHTML = `<article class="card"><div class="k">NEXT UP</div><h3></h3><div class="when"><b>${t.d}</b> · ${t.w}</div><div class="where"><i></i><span></span></div>
+  stage.innerHTML = `<article class="card"><div class="k">NEXT UP</div><h3></h3><div class="when"><b>${t.d}</b> · ${t.w}</div><div class="where"><i></i><span></span></div>${t.u ? `<div class="upd"><span class="av">${I.moon}</span><span><b>LUNA</b></span></div>` : ''}
     <div class="track"><div class="fill l"></div><div class="fill r"></div>
       <div class="side l">${I.left}Done</div><div class="side r">Skip${I.right}</div>
       <button class="thumb" aria-label="Talk to Luna about this task">${o.thumb}</button></div>
     <div class="under">Tap the middle to tell Luna something</div></article>`;
   const card = stage.querySelector('.card');
   card.querySelector('h3').textContent = t.t; card.querySelector('.where span').textContent = t.s;
+  if (t.u) card.querySelector('.upd > span:last-child').append(t.u);
   swipe(ph, o, card);
 }
 
