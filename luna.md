@@ -87,10 +87,12 @@
 - Usage: 3 helpers + Opus every day could eat plan usage. Measure on the first runs.
 
 ## Later / V2
-- Thick Luna: reskin Orbit with Luna's look, free model first, API backup with a cap (e.g. £5/month). After Luna's first runs are solid. Start by looking at Orbit's model in DF-AI-Lab/app-assistant
-- Orbit → TaskNotes tidy-up: Orbit drops tasks in cheaply and keeps a raw copy of what Darren asked; each morning a Haiku helper compares the two and fixes or neatens the TaskNotes item. Also dates, duplicates, old tasks
-- Save Darren's requests so Luna learns how he likes things
-- Clean up the earlier Orbit agents attempt
+- Full transcript report (training data for Orbit). For every chat message and card reply, save one line:
+  - **Said**: Darren's exact words (typos kept)
+  - **Did**: what Luna actually did (tools used, what changed, where)
+  - **Result**: the outcome / Luna's reply
+  - **Right?**: yes / no, plus Darren's correction if wrong
+  - Builds on `log/*.jsonl` (cards) and the page's `chat/<date>` docs. Needs one shared format + a "was it right?" tap
 
 ## PRD
 
@@ -102,6 +104,8 @@
 - First real scheduled run: Mon 9 Nov, 7:40am. Check: did it run, did the page update, did the ping arrive, token use in `log/usage.md`.
 
 ## Change log
+- 14 Nov 2026: Luna page v25. Chat pictures are redrawn as a clean, smaller JPEG before sending; picture errors now say what went wrong and are saved in the chat log. Old cards show an amber "these cards are old · Run now" bar. Found why the board was stale: the 7:40 task fires into an old chat that waits for Darren's "go" and never runs
+- 14 Nov 2026: Cleared Later / V2 (Thick Luna, Orbit tidy-up, learn requests, Orbit clean-up, thinking animation). Only the full transcript report stays
 - 8 Nov 2026: Project file created; idea moved here from app-assistant
 - 8 Nov 2026: Brain dump 2 added; card page mocked and design agreed
 - 8 Nov 2026: Locked model split, Pro-plan schedule, token log, repo layout with helper memory files (mock/structure.html)
