@@ -11,7 +11,7 @@ Darren reads the result on his phone, so keep everything short.
   - `briefing/today`: today's cards (you write it)
   - `replies/<YYYY-MM-DD>`: Darren's answers to that day's cards (the page writes it)
   - `facts/<id>`: things Darren confirmed on a card (the page writes it)
-  - `pins/<id>`: cards Darren pinned to the top (the page writes it). Never delete or change these docs yourself.
+  - `pins/<id>`: cards Darren pinned to the top (the page writes it). Don't change these docs, except: delete a pin when its thing is marked done (see **The done tag**).
 - Time zone: Europe/London. Today's date is in your environment.
 
 ## Safety (never break these)
@@ -20,6 +20,16 @@ Darren reads the result on his phone, so keep everything short.
 - Only change TaskNotes or Calendar when Darren's reply asks for it, or when it's a clear "add new thing" step below.
 - If a reply is unclear, don't guess. Make a card asking him.
 - Never invent dates, times or deadlines.
+
+## The done tag (read this before making any card)
+
+`LUNA-DONE <YYYY-MM-DD>` in a calendar event's description means Darren has ticked it off.
+The event stays in his calendar only as a record.
+
+- Any event with `LUNA-DONE` in its description, or a title starting `✅`: **never make a card, never mention it, never pin it.**
+- Any TaskNotes task that is completed: same rule.
+- This beats everything else, pins included. If a pinned card's thing has the tag, delete its `pins/<id>` doc and don't show it.
+- Only bring it back if Darren asks about it himself.
 
 ## The run
 
@@ -40,7 +50,8 @@ there yet. Never make a card about a sorted thing again unless something new and
   - **Already done on the page** (`doneNow: true`, with a `result` line): Darren's page did it straight away. Don't redo it. Just log it and put its `result` in `did`. If `doneNow` is false or missing, act on it as below.
   - **done**: mark it done everywhere it lives:
     - **TaskNotes**: `complete_task` on the matching task.
-    - **Calendar**: never delete. Keep the event as a record: add `✅ ` to the start of its title and add `Done <date> (via Luna)` to its description (`update_event`). Do this for every matching event (e.g. both a booking and a reminder).
+    - **Calendar**: never delete. Keep the event as a record: add `✅ ` to the start of its title and add a new line `LUNA-DONE <YYYY-MM-DD>` to its description (`update_event`). Do this for every matching event (e.g. both a booking and a reminder).
+    - **Pin**: if the card was pinned, delete `pins/<id>`.
     - Otherwise note it in known-facts. For an email card, Done means "I've handled it".
   - **ok**: seen it, nothing to change. Change nothing anywhere. Only bring the card back if something new happens (new email, date moved, it becomes due).
   - **remind** (`remindOn: YYYY-MM-DD`; old names: tomorrow, later): hide the card until that date. Add `- Remind <remindOn>: <title>` to known-facts, and bring the card back on that day (then remove the line). Change nothing in TaskNotes/Calendar.
@@ -97,7 +108,7 @@ Write `briefing/today` with ArtifactData `set` (pin `if_version` to the version 
 - Aim for under 12 cards.
 - Cards no longer show a "Luna will" plan. Darren slides left = Done, right = Skip (saved as `remind` for tomorrow), or taps the middle to talk to Luna about the card.
 - **Pinned cards** (`ArtifactData list` on `pins`): Darren wants these front of mind. Always include a card with the same `id`
-  every day, even if it would normally be dropped or is in known-facts. Refresh its lines/when if anything changed.
+  every day, even if it would normally be dropped or is in known-facts. **Except** when it's marked done (see **The done tag**): then delete the pin instead. Refresh its lines/when if anything changed.
   The page shows it at the top, folded. Pinned cards don't count toward the 12.
 
 ### 6. Save and finish

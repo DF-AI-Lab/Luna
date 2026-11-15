@@ -754,7 +754,7 @@ function wire(card) {
   const max = () => sw.clientWidth / 2 - 28;
   const reset = () => { knob.classList.add('snap'); knob.style.transform = ''; gl.style.opacity = gr.style.opacity = 0; };
   card._resetSwipe = reset;
-  const doneIt = () => { set(id, card, { action: 'done' }); stardust(card); };
+  const doneIt = () => { set(id, card, { action: 'done' }); if (pins[id]) { delete pins[id]; if (db) db.doc('pins/' + id).delete().catch(() => {}); } stardust(card); };
   const skipIt = () => { const d = new Date(); d.setDate(d.getDate() + 1); set(id, card, { action: 'remind', remindOn: iso(d) }); closeCard(card, true, 'skip'); };
   knob.addEventListener('pointerdown', e => { x0 = e.clientX; dx = 0; moved = false; knob.classList.remove('snap'); knob.setPointerCapture(e.pointerId); });
   knob.addEventListener('pointermove', e => {
@@ -1018,7 +1018,7 @@ async function act(card, kind, text, onLine) {
     "You are Luna's action helper for Darren. Do what he asked on this card using the tools, then reply with ONE short line saying exactly what you changed and where.",
     'Today is ' + today + ' (UK time).',
     'Card: ' + JSON.stringify({ title: c.title, when: c.when, lines: c.lines, plan: c.plan, refs: c.refs }),
-    kind === 'done' ? "Darren tapped DONE. That means: tick off the matching TaskNotes task(s) and, for each matching calendar event, keep it but put '✅ ' at the start of its title and add 'Done " + today + " (via Luna)' to its description. If it's an email card with nothing to tick off, just say it's noted."
+    kind === 'done' ? "Darren tapped DONE. That means: tick off the matching TaskNotes task(s) and, for each matching calendar event, keep it but put '✅ ' at the start of its title and add a new line 'LUNA-DONE " + today + "' to its description (this tag tells Luna never to bring it up again). If it's an email card with nothing to tick off, just say it's noted."
                     : 'Darren replied: "' + text + '"' + (imgs.length ? ' He also attached ' + imgs.length + ' picture(s) (screenshots or photos) to show you; read them and use what they show.' : ''),
     'If Darren says something is sorted, set up, paid or already done (or shows a picture as proof): check the evidence (his pictures, and search Gmail/Calendar/TaskNotes for it). If the evidence backs him up, that IS success, even when there is no task to tick: make sure the calendar has the key date (add it only if missing), then call remember_fact with a short, complete fact so Luna never asks again. Do not answer "Not done" just because there was no task or calendar item to update.',
     'Rules: never delete anything. Never send email, only save drafts. Find the real item with a search first and use its id. Only if his request is unclear, or there is truly no evidence at all, change nothing and say so in one line, starting with "Not done:".',

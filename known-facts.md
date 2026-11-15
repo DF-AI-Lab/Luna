@@ -3,7 +3,7 @@
 Luna skips these unless they change. Remove a line once it's fully done and in the past.
 
 ## Appointments and plans
-- York Learning (Marie Lester): Marie emailed 9 Nov offering **Wed 11 Nov, 3pm** instead. Fallback is Wed 18 Nov, 3pm. Darren to text 07936 365903. Zoom or phone still TBC.
+- York Learning (Marie Lester): meeting is Wed 18 Nov, 3pm, in Calendar. Darren ticked it off (LUNA-DONE 2026-11-15). Don't make a card or mention it.
 - Wed 11 Nov, 1:50pm: dentist, York Dental Practice (Vaishnavi Kulkvarni). CONFIRMED by email 9 Nov. Calendar still shows a 2pm TBC placeholder.
 - Tue 10 Nov, 5:30pm: chiropractor, Simply Chiropractic, 74 Clifton. In calendar.
 - JRHT downstairs WC works (ref MW532687): 16, 17, 18 Nov. Times unknown. Not in calendar.
