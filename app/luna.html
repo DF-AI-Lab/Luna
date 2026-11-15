@@ -1089,6 +1089,7 @@ async function act(card, kind, text, onLine) {
       'Look at: Gmail from the last 2 days (important, from real people, bills, deliveries, appointments, security), Calendar for the next 14 days, and open TaskNotes tasks due within 7 days or overdue.',
       'Card rules: at most 12 cards. section "do" = needs him today, "soon" = in the next 2 weeks, "fyi" = just so he knows. title is short and says the point. when = a short date or time, or "". lines = 1 to 3 short facts (refs, dates, amounts, who). where = where it lives, e.g. "In Calendar and TaskNotes · Home" or "Email from Smile Dental". update = optional short note from Luna about something she changed or noticed, else leave it out. Plain words, no emoji.',
       'Keep the same id for the same topic as before (ids are short-kebab-case). Pinned cards must stay, with the same id, updated if anything changed (they do not count toward 12).',
+      'DONE TAG: a calendar event with LUNA-DONE in its description, or a title starting with a tick (✅), is finished and kept only as a record. Completed TaskNotes tasks are finished too. NEVER make a card about these or mention them, even if pinned.',
       'NEVER make a card about anything in SORTED. Skip cards he marked done or dropped today. Skip a card he snoozed (remind) until its date comes.',
       'SORTED (never ask again): ' + JSON.stringify(facts.map(f => f.topic + ': ' + f.fact)),
       'PINNED: ' + JSON.stringify(pinned.map(p => ({ id: p.id, section: p.section, title: p.title, when: p.when, lines: p.lines, plan: p.plan }))),
