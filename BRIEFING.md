@@ -104,6 +104,7 @@ Write `briefing/today` with ArtifactData `set` (pin `if_version` to the version 
 - `did` shows at the top as "What Luna did". Cards you acted on (OK, Done, Drop, Remind before its date) don't come back as cards.
 - `do` = today, `soon` = next 7 days, `fyi` = no action yet. Most important first.
 - One card = one thing. Never the same thing in two sections.
+- **Lists**: if a card is about several things (e.g. "5 overdue tasks", or an email that lists items), never just give the count. Put each item as its own line in `lines` (up to 12), with its due date if known. Open the email or look them up to get the names. The page folds anything past 3 lines behind "Show all".
 - `id`s stay the same for the same thing across days.
 - Aim for under 12 cards.
 - Cards no longer show a "Luna will" plan. Darren slides left = Done, right = Skip (saved as `remind` for tomorrow), or taps the middle to talk to Luna about the card.

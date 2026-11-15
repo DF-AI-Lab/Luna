@@ -214,6 +214,10 @@ section.sec[hidden] { display: none; }
 .card.is-pinned.folded .when { margin-top: 0; }
 .card.is-pinned.folded .pin { top: 8px; }
 .card.answered .plan, .card.answered ul { display: none; }
+.card ul li.more { display: none; } .card ul.all li.more { display: list-item; }
+.moreb { align-self: flex-start; margin-top: -8px; font: 600 .8rem var(--ui); color: var(--violet); background: none; border: 0; padding: 2px 0; min-height: 0; }
+.moreb:hover { background: none; color: var(--fg); }
+.card.answered .moreb { display: none; }
 
 /* Dock: progress chip + Ask Luna; panel opens on the talk orb */
 .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; --ease: cubic-bezier(.22,1,.36,1); pointer-events: none;
@@ -657,7 +661,14 @@ function makeCard(c) {
   const card = el('article', 'card'); card.dataset.id = c.id; card.dataset.section = c.section || 'fyi';
   card.appendChild(el('h3', null, c.title));
   if (c.when) card.appendChild(el('div', 'when', c.when));
-  if (c.lines && c.lines.length) { const ul = el('ul'); c.lines.forEach(t => ul.appendChild(el('li', null, t))); card.appendChild(ul); }
+  if (c.lines && c.lines.length) {
+    const ul = el('ul'); c.lines.forEach((t, i) => { const li = el('li', null, t); if (i >= 3) li.className = 'more'; ul.appendChild(li); }); card.appendChild(ul);
+    if (c.lines.length > 3) {
+      const mb = el('button', 'moreb', 'Show all ' + c.lines.length + ' ▾'); mb.type = 'button'; mb.setAttribute('aria-expanded', 'false');
+      mb.onclick = e => { e.stopPropagation(); const open = ul.classList.toggle('all'); mb.textContent = open ? 'Show less ▴' : 'Show all ' + c.lines.length + ' ▾'; mb.setAttribute('aria-expanded', open); };
+      card.appendChild(mb);
+    }
+  }
   if (c.where) { const w = el('div', 'where'); w.append(el('i'), el('span', null, c.where)); card.appendChild(w); }
   const since = el('div', 'since'); since.hidden = true; card.appendChild(since);
   wire(card);
@@ -1087,7 +1098,7 @@ async function act(card, kind, text, onLine) {
       "You are Luna, Darren's morning-briefing agent, doing a quick run from his Luna page. Look things up with the tools, then call save_cards ONCE with today's cards.",
       'Now: ' + now.toLocaleString('en-GB') + ' (UK). Today is ' + today + '.',
       'Look at: Gmail from the last 2 days (important, from real people, bills, deliveries, appointments, security), Calendar for the next 14 days, and open TaskNotes tasks due within 7 days or overdue.',
-      'Card rules: at most 12 cards. section "do" = needs him today, "soon" = in the next 2 weeks, "fyi" = just so he knows. title is short and says the point. when = a short date or time, or "". lines = 1 to 3 short facts (refs, dates, amounts, who). where = where it lives, e.g. "In Calendar and TaskNotes · Home" or "Email from Smile Dental". update = optional short note from Luna about something she changed or noticed, else leave it out. Plain words, no emoji.',
+      'Card rules: at most 12 cards. section "do" = needs him today, "soon" = in the next 2 weeks, "fyi" = just so he knows. title is short and says the point. when = a short date or time, or "". lines = 1 to 3 short facts (refs, dates, amounts, who). LISTS: if a card is about several things (e.g. overdue tasks, or an email that lists items), never just give a count. Put each item as its own line, up to 12, e.g. \"Renew car tax · due 12 Nov\". Open the email or look the items up to get their names. The page folds anything past 3 lines. where = where it lives, e.g. "In Calendar and TaskNotes · Home" or "Email from Smile Dental". update = optional short note from Luna about something she changed or noticed, else leave it out. Plain words, no emoji.',
       'Keep the same id for the same topic as before (ids are short-kebab-case). Pinned cards must stay, with the same id, updated if anything changed (they do not count toward 12).',
       'DONE TAG: a calendar event with LUNA-DONE in its description, or a title starting with a tick (✅), is finished and kept only as a record. Completed TaskNotes tasks are finished too. NEVER make a card about these or mention them, even if pinned.',
       'NEVER make a card about anything in SORTED. Skip cards he marked done or dropped today. Skip a card he snoozed (remind) until its date comes.',
