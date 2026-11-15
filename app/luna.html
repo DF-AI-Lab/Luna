@@ -808,7 +808,7 @@ function restore(saved) {
     if (!card) continue;
         set(id, card, { action: a.action || '', reply: a.reply || '', remindOn: a.remindOn || '' });
     if (a.result) { answers[id].result = a.result; answers[id].doneNow = a.doneNow; card._note(a.result, a.doneNow ? '' : 'bad'); }
-    if (['ok', 'remind', 'drop'].includes(a.action) || a.closed) closeCard(card, false);
+    if (['ok', 'remind', 'drop', 'done'].includes(a.action) || a.closed) closeCard(card, false);
   }
   const btn = document.getElementById('send');
   if (Object.keys(saved || {}).length) { btn.textContent = 'Saved ✓'; btn.disabled = true; }
@@ -872,6 +872,7 @@ function closeCard(card, animate, how) {
   const id = card.dataset.id, title = card.querySelector('h3').textContent, a = answers[id] || {};
   const label = how === 'skip' ? '↷ ' + title + ' · skipped, back ' + nice(a.remindOn) : a.action === 'remind' ? '⏰ ' + title + ' · back ' + nice(a.remindOn)
               : a.action === 'drop' ? '✕ ' + title + ' · dropped (nothing deleted)'
+              : a.action === 'done' ? '✓ ' + title + ' · done'
               : '✓ ' + title + ' · seen';
   const fold = () => {
     const g = el('div', 'gone'); const sp = el('span', null, label);
