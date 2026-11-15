@@ -77,13 +77,26 @@ header { overflow: visible; z-index: 5; }
 .ic.solid { fill: currentColor; stroke: none; opacity: 1; }
 .run-mi { color: var(--violet); font-weight: 800; }
 .run-mi[disabled] { opacity: .5; cursor: default; }
-.run { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; max-width: 340px; }
-.rbar { height: 5px; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; }
-.rbar i { display: block; height: 100%; width: 0; border-radius: 99px; background: linear-gradient(90deg, var(--violet-deep), var(--violet)); transition: width .6s ease; }
+/* Run status: a drawer that slides out from under the header card (the card never changes size) */
+.hcard { position: relative; }
+.drawer { position: relative; z-index: 1; display: grid; grid-template-rows: 0fr; margin: 0 12px; transition: grid-template-rows .5s cubic-bezier(.2,.8,.2,1); }
+.drawer.open { grid-template-rows: 1fr; }
+.run { min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 8px;
+  background: linear-gradient(180deg, rgba(16,26,45,.96), rgba(12,20,36,.92)); border: 1px solid var(--edge); border-top: 0; border-radius: 0 0 18px 18px;
+  padding: 0 14px; opacity: 0; transform: translateY(-14px); transition: opacity .35s, transform .5s cubic-bezier(.2,.8,.2,1), padding .5s cubic-bezier(.2,.8,.2,1); }
+.drawer.open .run { opacity: 1; transform: none; padding: 12px 14px 12px; }
+.rbar { position: relative; height: 5px; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; }
+.rbar i { position: relative; display: block; height: 100%; width: 0; border-radius: 99px; overflow: hidden; background: linear-gradient(90deg, var(--violet-deep), var(--violet)); transition: width .6s ease, background .4s; }
+.rbar i::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); transform: translateX(-100%); animation: shimmer 1.4s ease-in-out infinite; }
+.run.done .rbar i::after, .run.bad .rbar i::after { animation: none; opacity: 0; }
+@keyframes shimmer { to { transform: translateX(100%); } }
 .rtxt { display: flex; justify-content: space-between; align-items: center; gap: 10px; font: 600 .82rem var(--ui); color: var(--violet); }
-.rtxt span { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.rtxt span { display: inline-flex; align-items: center; gap: 8px; min-width: 0; animation: txtin .35s ease; }
+@keyframes txtin { from { opacity: 0; transform: translateY(4px); } }
 .rtxt button { font: 700 .75rem var(--ui); color: var(--muted); background: none; border: 1px solid var(--edge); border-radius: 99px; padding: 3px 10px; cursor: pointer; flex: none; }
 .run.done .rtxt { color: var(--green); } .run.done .rbar i { background: var(--green); }
+.run.done .rbar { animation: donepulse .9s ease-out; }
+@keyframes donepulse { 0% { box-shadow: 0 0 0 0 rgba(127,224,168,.55); } 100% { box-shadow: 0 0 0 8px rgba(127,224,168,0); } }
 .run.bad .rtxt { color: var(--red); } .run.bad .rbar i { background: var(--red); }
 button.mi { cursor: pointer; } button.mi:hover { background: rgba(255,255,255,.06); }
 header { border-color: rgba(169,155,255,.32); box-shadow: 0 0 0 1px rgba(169,155,255,.06), 0 0 34px -10px rgba(169,155,255,.35); }
@@ -372,13 +385,14 @@ pre { background: rgba(3, 4, 14, .55); border: 1px solid var(--edge); border-rad
   background: rgba(169,155,255,.12); border: 1px solid rgba(169,155,255,.22); border-radius: 14px; padding: 4px 11px; position: relative; z-index: 1; }
 .lc-about[hidden] { display: none; }
 .lc-about em { font-style: normal; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-@media (prefers-reduced-motion: reduce) { .card.misting, .ripple { animation-duration: .01s; } }
+@media (prefers-reduced-motion: reduce) { .card.misting, .ripple { animation-duration: .01s; } .drawer, .run, .rbar i { transition: none; } .rbar i::after, .rtxt span, .run.done .rbar { animation: none; } }
 </style>
 
 <canvas id="stars" aria-hidden="true"></canvas>
 <canvas id="fx" aria-hidden="true"></canvas>
 
 <div class="wrap">
+  <div class="hcard">
   <header>
     <canvas class="moon" id="moon" aria-hidden="true"></canvas>
     <button class="dots" id="dots" type="button" aria-label="Settings" aria-haspopup="menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
@@ -390,9 +404,10 @@ pre { background: rgba(3, 4, 14, .55); border: 1px solid var(--edge); border-rad
     </div>
     <h1 class="wordmark">Luna<span class="tag">Agent</span><span class="ver">v1.02</span></h1>
     <div class="hello" id="hello">Good morning, Darren</div>
-    <div class="run" id="run" hidden><div class="rbar"><i id="runbar"></i></div><div class="rtxt"><span id="runtxt" role="status" aria-live="polite">Starting…</span><button type="button" id="runstop">Stop</button></div></div>
     <div class="meta"><span id="dateLabel"></span><span class="clock"></span><span id="cardCount"></span><span class="mockflag" id="flag" hidden></span></div>
   </header>
+  <div class="drawer" id="drawer"><div class="run" id="run"><div class="rtxt"><span id="runtxt" role="status" aria-live="polite">Starting…</span><button type="button" id="runstop">Stop</button></div><div class="rbar"><i id="runbar"></i></div></div></div>
+  </div>
 
 
   <div id="board"><p class="empty" id="empty">Loading today's cards…</p></div>
@@ -1010,20 +1025,23 @@ async function act(card, kind, text, onLine) {
 // Run now: a quick briefing run from the page, with read-only look-ups, then new cards
 (function () {
   const btn = document.getElementById('mRun'), run = document.getElementById('run'), bar = document.getElementById('runbar'),
-        txt = document.getElementById('runtxt'), stop = document.getElementById('runstop');
+        txt = document.getElementById('runtxt'), stop = document.getElementById('runstop'), drawer = document.getElementById('drawer');
+  let shut = null;
+  const open = on => { clearTimeout(shut); drawer.classList.toggle('open', on); };
   const I = d => '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg>';
   const ICON = { mail: '<rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="m4 7 8 6 8-6"/>', cal: '<rect x="4" y="5.5" width="16" height="14" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>',
     task: '<path d="m5 12.5 4.5 4.5L19 7.5"/>', skip: '<circle cx="12" cy="12" r="8.5"/><path d="m8 12 3 3 5-6"/>', moon: '<path d="M19 14.5A7.5 7.5 0 1 1 9.5 5a6 6 0 0 0 9.5 9.5z"/>',
     warn: '<circle cx="12" cy="12" r="8.5"/><path d="M12 8v5M12 16.2v.1"/>' };
   let ctl = null, pct = 0;
-  const step = (icon, t, w) => { txt.innerHTML = I(ICON[icon]); txt.append(t); if (w > pct) { pct = w; bar.style.width = w + '%'; } };
-  const end = (cls, icon, t) => { run.classList.add(cls); bar.style.width = '100%'; txt.innerHTML = I(ICON[icon]); txt.append(t); stop.textContent = 'Hide'; btn.disabled = false; ctl = null; };
-  stop.onclick = () => { if (ctl) { ctl.abort(); return; } run.hidden = true; };
+  const pop = () => { txt.style.animation = 'none'; void txt.offsetWidth; txt.style.animation = ''; };
+  const step = (icon, t, w) => { if (txt.textContent !== t) pop(); txt.innerHTML = I(ICON[icon]); txt.append(t); if (w > pct) { pct = w; bar.style.width = w + '%'; } };
+  const end = (cls, icon, t) => { pop(); run.classList.add(cls); bar.style.width = '100%'; txt.innerHTML = I(ICON[icon]); txt.append(t); stop.textContent = 'Hide'; btn.disabled = false; ctl = null; if (cls === 'done') shut = setTimeout(() => open(false), 6000); };
+  stop.onclick = () => { if (ctl) { ctl.abort(); return; } open(false); };
   btn.onclick = async e => {
     e.stopPropagation();
     document.getElementById('menu').hidden = true; document.getElementById('dots').setAttribute('aria-expanded', 'false');
     if (ctl) return;
-    run.hidden = false; run.classList.remove('done', 'bad'); pct = 0; bar.style.width = '0'; stop.textContent = 'Stop';
+    open(true); run.classList.remove('done', 'bad'); pct = 0; bar.style.width = '0'; stop.textContent = 'Stop';
     await ready;
     if (!db || !mcp || !sample) { end('bad', 'warn', 'Run now needs Luna open in Claude.'); return; }
     btn.disabled = true; ctl = new AbortController();
