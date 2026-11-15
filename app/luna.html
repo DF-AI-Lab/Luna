@@ -1059,7 +1059,7 @@ async function act(card, kind, text, onLine) {
   let ctl = null, pct = 0;
   const pop = () => { txt.style.animation = 'none'; void txt.offsetWidth; txt.style.animation = ''; };
   const step = (icon, t, w) => { if (txt.textContent !== t) pop(); txt.innerHTML = I(ICON[icon]); txt.append(t); if (w > pct) { pct = w; bar.style.width = w + '%'; } };
-  const end = (cls, icon, t) => { pop(); run.classList.add(cls); bar.style.width = '100%'; txt.innerHTML = I(ICON[icon]); txt.append(t); stop.textContent = 'Hide'; btn.disabled = false; ctl = null; if (cls === 'done') shut = setTimeout(() => open(false), 6000); };
+  const end = (cls, icon, t) => { pop(); run.classList.add(cls); bar.style.width = '100%'; txt.innerHTML = I(ICON[icon]); txt.append(t); stop.textContent = 'Hide'; btn.disabled = false; ctl = null; if (cls === 'done') shut = setTimeout(() => open(false), 1500); };
   stop.onclick = () => { if (ctl) { ctl.abort(); return; } open(false); };
   btn.onclick = async e => {
     e.stopPropagation();
