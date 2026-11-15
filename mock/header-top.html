@@ -51,9 +51,15 @@ header { position:sticky; top:0; z-index:5; background:var(--tint); overflow:hid
 .A.slim .moon { width:44px; height:44px; }
 
 /* B · Flat band: square edges, thin glowing line underneath, stays full size */
-.B header { padding:24px 120px 22px 20px; min-height:140px; display:flex; flex-direction:column; justify-content:center; gap:6px; }
+.B header { padding:10px 70px 10px 16px; display:flex; flex-direction:column; justify-content:center; gap:3px; }
+.B .wm { font-size:1.05rem; letter-spacing:.42em; }
+.B .wm .tag { font-size:.52rem; } .B .wm .ver { font-size:.52rem; padding:2px 6px; margin-left:8px; }
+.B .hello { font-size:.9rem; line-height:1.25; }
+.B .meta { font-size:.74rem; gap:10px; line-height:1.2; }
+.B .body { padding-top:14px; }
+.phone.fold { max-width:344px; }
 .B header::after { content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:linear-gradient(90deg, transparent, var(--violet), transparent); opacity:.7; }
-.B .moon { right:20px; width:92px; height:92px; }
+.B .moon { right:14px; width:50px; height:50px; box-shadow:0 0 16px rgba(244,236,210,.2); }
 
 /* C · Big top, tiny bar: tall header that shrinks to a one-line bar */
 .C header { padding:30px 130px 26px 20px; min-height:170px; display:flex; flex-direction:column; justify-content:flex-end; gap:6px;
@@ -67,12 +73,11 @@ header { position:sticky; top:0; z-index:5; background:var(--tint); overflow:hid
 @media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
 </style>
 
-<div class="top"><h1>Luna header, stuck to the top</h1><p>No gap above. It stays at the top when you scroll. Scroll inside each phone to try it.</p></div>
+<div class="top"><h1>Luna header, stuck to the top</h1><p>Option B made as tight as possible. No gap above, fixed to the top. Scroll inside each phone to try it.</p></div>
 
 <div class="grid">
-  <section><p class="lab">A · Rounded bar</p><p class="why">Edge to edge, rounded at the bottom. Slims down when you scroll.</p><div class="phone A" data-slim></div></section>
-  <section><p class="lab">B · Flat band</p><p class="why">Square edges with a thin purple line under it. Always full size.</p><div class="phone B"></div></section>
-  <section><p class="lab">C · Big top, tiny bar</p><p class="why">Tall with a big moon. Shrinks to a one-line bar when you scroll.</p><div class="phone C" data-slim></div></section>
+  <section><p class="lab">B · Tight · front screen</p><p class="why">Z Fold front screen width. Small padding, small moon, always stuck to the top.</p><div class="phone B fold"></div></section>
+  <section><p class="lab">B · Tight · opened</p><p class="why">Same header on the big inner screen.</p><div class="phone B" style="max-width:560px"></div></section>
 </div>
 
 <template id="t">
