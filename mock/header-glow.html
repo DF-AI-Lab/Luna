@@ -1,0 +1,56 @@
+<title>Luna Header Glow</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@200&family=Manrope:wght@500;700&display=swap">
+<style>
+/* Layout: the current header, then three purple top-left glow options. Only the card background changes. */
+:root {
+  color-scheme: dark;
+  --sky:#02040a; --edge: rgba(169,155,255,.32);
+  --fg:#f1f2ff; --muted:#a3a8c8; --violet:#a99bff; --moon:#f4ecd2;
+  --script:"Josefin Sans","Segoe UI",system-ui,sans-serif;
+  --ui:"Manrope","Segoe UI",system-ui,sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin:0; min-height:100vh; background: linear-gradient(180deg,#02040a,#081224 60%,#18263c) fixed; color:var(--fg); font-family:var(--ui);
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px)); padding-block:28px 60px; }
+.list { max-width:600px; margin:0 auto; display:flex; flex-direction:column; gap:34px; }
+h1 { margin:0 0 4px; font-size:1.1rem; }
+.sub { margin:0; color:var(--muted); font-size:.9rem; }
+.lab { margin:0 0 10px; font-size:.78rem; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:var(--violet); }
+.lab span { color:var(--muted); letter-spacing:0; text-transform:none; font-weight:500; margin-left:8px; }
+
+header { position:relative; border:1px solid var(--edge); border-radius:22px; min-height:128px; padding:18px 132px 18px 22px;
+  display:flex; flex-direction:column; justify-content:center; gap:6px; overflow:hidden;
+  box-shadow: 0 0 0 1px rgba(169,155,255,.06), 0 0 34px -10px rgba(169,155,255,.35); }
+.moon { position:absolute; right:18px; top:50%; transform:translateY(-50%); width:96px; height:96px; border-radius:50%;
+  background: radial-gradient(circle at 34% 40%, #8d8a7c 0 7%, transparent 8%), radial-gradient(circle at 55% 66%, #9a978a 0 5%, transparent 6%),
+              linear-gradient(90deg,#e9e3cc 0 70%, #14161f 70%); box-shadow:0 0 26px rgba(244,236,210,.2); }
+.wm { margin:0; display:flex; align-items:baseline; gap:2px; font:200 1.5rem var(--script); letter-spacing:.5em; text-transform:uppercase; color:var(--moon); line-height:1; }
+.wm .tag { font:700 .62rem var(--ui); letter-spacing:.32em; color:var(--violet); }
+.wm .ver { align-self:center; margin-left:12px; font:700 .62rem var(--ui); letter-spacing:.06em; color:var(--muted); border:1px solid rgba(190,200,255,.14); border-radius:99px; padding:3px 8px; text-transform:none; }
+.hello { font-weight:500; font-size:1.05rem; }
+.meta { color:var(--muted); font-size:.85rem; display:flex; gap:12px; flex-wrap:wrap; }
+@media (max-width:420px) { header { padding-right:104px; } .moon { width:84px; height:84px; right:14px; } }
+
+/* Backgrounds only */
+.now { background: linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.02)), #070a16; }
+.a { background: radial-gradient(130% 150% at 0% 0%, rgba(132,112,255,.30) 0%, rgba(108,92,231,.12) 35%, transparent 65%), #090b1c; }
+.b { background: linear-gradient(135deg, rgba(120,100,240,.38) 0%, rgba(80,64,180,.16) 38%, transparent 72%), #080a1a; }
+.c { background: radial-gradient(90% 120% at 0% 0%, rgba(150,130,255,.32), transparent 60%), linear-gradient(135deg, #1c1748 0%, #110f2e 45%, #090a18 100%); }
+</style>
+
+<div class="list">
+  <div><h1>Header background options</h1><p class="sub">Only the card background changes. Everything else stays the same.</p></div>
+
+  <section><p class="lab">Now <span>for comparison</span></p>
+    <header class="now"><div class="moon"></div><h2 class="wm">Luna<span class="tag">Agent</span><span class="ver">v1.03</span></h2><div class="hello">Good morning, Darren</div><div class="meta"><span>Sun 15 Nov</span><span>10:29am</span><span>6 cards</span></div></header></section>
+
+  <section><p class="lab">A · Soft glow <span>round light in the corner</span></p>
+    <header class="a"><div class="moon"></div><h2 class="wm">Luna<span class="tag">Agent</span><span class="ver">v1.03</span></h2><div class="hello">Good morning, Darren</div><div class="meta"><span>Sun 15 Nov</span><span>10:29am</span><span>6 cards</span></div></header></section>
+
+  <section><p class="lab">B · Diagonal wash <span>purple sweeps across and fades</span></p>
+    <header class="b"><div class="moon"></div><h2 class="wm">Luna<span class="tag">Agent</span><span class="ver">v1.03</span></h2><div class="hello">Good morning, Darren</div><div class="meta"><span>Sun 15 Nov</span><span>10:29am</span><span>6 cards</span></div></header></section>
+
+  <section><p class="lab">C · Deep tint <span>whole card purple-toned, closest to Assist</span></p>
+    <header class="c"><div class="moon"></div><h2 class="wm">Luna<span class="tag">Agent</span><span class="ver">v1.03</span></h2><div class="hello">Good morning, Darren</div><div class="meta"><span>Sun 15 Nov</span><span>10:29am</span><span>6 cards</span></div></header></section>
+</div>
