@@ -411,14 +411,16 @@ header .menu { right: var(--side); top: calc(100% - 4px); }
 /* Recap: fridge (Food Tracker) + money (Where's My Money), read live each time the page opens */
 .recap[hidden] { display: none; }
 .recap h2 .dot { background: var(--violet); box-shadow: 0 0 12px var(--violet); }
-.recap h2 { cursor: pointer; user-select: none; -webkit-user-select: none; border-radius: 8px; }
+.recap h2 { cursor: pointer; user-select: none; -webkit-user-select: none; border-radius: 12px; padding: 10px 0; margin: -10px 0; touch-action: manipulation; }
 .recap h2:focus-visible { outline: 2px solid var(--violet); outline-offset: 4px; }
 .rc-sum { display: none; font-weight: 500; letter-spacing: .04em; text-transform: none; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.rc-chev { order: 3; font-size: .9rem; letter-spacing: 0; transition: transform .25s; }
+.rc-chev { order: 3; flex: none; font: 700 .72rem var(--ui); letter-spacing: .04em; text-transform: none; color: var(--violet); border: 1px solid rgba(169,155,255,.35); border-radius: 99px; padding: 5px 12px; }
+.rc-chev::before { content: "Hide ▴"; }
+.recap.folded .rc-chev::before { content: "Show ▾"; }
 .recap h2::after { order: 2; }
 .recap.folded .rc { display: none; }
 .recap.folded .rc-sum { display: inline; }
-.recap.folded .rc-chev { transform: rotate(-90deg); }
+
 .rc { background: linear-gradient(160deg, var(--glass-hi), var(--glass)); border: 1px solid var(--edge); border-radius: 20px; padding: 18px;
   backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 18px 40px -24px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.06); }
 .rc-sec + .rc-sec { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--edge); }
@@ -465,9 +467,9 @@ header .menu { right: var(--side); top: calc(100% - 4px); }
       <button class="mi run-mi" role="menuitem" type="button" id="mRun"><svg class="ic solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>Run now</button>
       <div class="mi info"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Morning run · every day 7:40</div>
       <button class="mi" role="menuitem" type="button" id="mRefresh"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v4h-4"/></svg>Refresh cards</button>
-      <div class="mi info"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 14.5A7.5 7.5 0 1 1 9.5 5a6 6 0 0 0 9.5 9.5z"/></svg>Luna Agent · v1.05</div>
+      <div class="mi info"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 14.5A7.5 7.5 0 1 1 9.5 5a6 6 0 0 0 9.5 9.5z"/></svg>Luna Agent · v1.06</div>
     </div>
-    <h1 class="wordmark">Luna<span class="tag">Agent</span><span class="ver">v1.05</span></h1>
+    <h1 class="wordmark">Luna<span class="tag">Agent</span><span class="ver">v1.06</span></h1>
     <div class="hello" id="hello">Good morning, Darren</div>
     <div class="meta"><span id="dateLabel"></span><span class="clock"></span><span id="cardCount"></span><span class="mockflag" id="flag" hidden></span></div>
   </header>
@@ -476,7 +478,7 @@ header .menu { right: var(--side); top: calc(100% - 4px); }
 
 
   <section class="recap" id="recap" aria-label="Fridge and money">
-    <h2 id="rcTop" role="button" tabindex="0" aria-expanded="true" aria-controls="rcBody"><span class="dot"></span>Fridge &amp; money<span class="rc-sum" id="rcSum"></span><span class="rc-chev" aria-hidden="true">▾</span></h2>
+    <h2 id="rcTop" role="button" tabindex="0" aria-expanded="true" aria-controls="rcBody"><span class="dot"></span>Fridge &amp; money<span class="rc-sum" id="rcSum"></span><span class="rc-chev" aria-hidden="true"></span></h2>
     <div class="rc" id="rcBody">
       <div class="rc-sec">
         <div class="rc-head">
