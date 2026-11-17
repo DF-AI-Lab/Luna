@@ -411,6 +411,14 @@ header .menu { right: var(--side); top: calc(100% - 4px); }
 /* Recap: fridge (Food Tracker) + money (Where's My Money), read live each time the page opens */
 .recap[hidden] { display: none; }
 .recap h2 .dot { background: var(--violet); box-shadow: 0 0 12px var(--violet); }
+.recap h2 { cursor: pointer; user-select: none; -webkit-user-select: none; border-radius: 8px; }
+.recap h2:focus-visible { outline: 2px solid var(--violet); outline-offset: 4px; }
+.rc-sum { display: none; font-weight: 500; letter-spacing: .04em; text-transform: none; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.rc-chev { order: 3; font-size: .9rem; letter-spacing: 0; transition: transform .25s; }
+.recap h2::after { order: 2; }
+.recap.folded .rc { display: none; }
+.recap.folded .rc-sum { display: inline; }
+.recap.folded .rc-chev { transform: rotate(-90deg); }
 .rc { background: linear-gradient(160deg, var(--glass-hi), var(--glass)); border: 1px solid var(--edge); border-radius: 20px; padding: 18px;
   backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 18px 40px -24px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.06); }
 .rc-sec + .rc-sec { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--edge); }
@@ -457,9 +465,9 @@ header .menu { right: var(--side); top: calc(100% - 4px); }
       <button class="mi run-mi" role="menuitem" type="button" id="mRun"><svg class="ic solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>Run now</button>
       <div class="mi info"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Morning run · every day 7:40</div>
       <button class="mi" role="menuitem" type="button" id="mRefresh"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v4h-4"/></svg>Refresh cards</button>
-      <div class="mi info"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 14.5A7.5 7.5 0 1 1 9.5 5a6 6 0 0 0 9.5 9.5z"/></svg>Luna Agent · v1.04</div>
+      <div class="mi info"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 14.5A7.5 7.5 0 1 1 9.5 5a6 6 0 0 0 9.5 9.5z"/></svg>Luna Agent · v1.05</div>
     </div>
-    <h1 class="wordmark">Luna<span class="tag">Agent</span><span class="ver">v1.04</span></h1>
+    <h1 class="wordmark">Luna<span class="tag">Agent</span><span class="ver">v1.05</span></h1>
     <div class="hello" id="hello">Good morning, Darren</div>
     <div class="meta"><span id="dateLabel"></span><span class="clock"></span><span id="cardCount"></span><span class="mockflag" id="flag" hidden></span></div>
   </header>
@@ -468,8 +476,8 @@ header .menu { right: var(--side); top: calc(100% - 4px); }
 
 
   <section class="recap" id="recap" aria-label="Fridge and money">
-    <h2><span class="dot"></span>Fridge &amp; money</h2>
-    <div class="rc">
+    <h2 id="rcTop" role="button" tabindex="0" aria-expanded="true" aria-controls="rcBody"><span class="dot"></span>Fridge &amp; money<span class="rc-sum" id="rcSum"></span><span class="rc-chev" aria-hidden="true">▾</span></h2>
+    <div class="rc" id="rcBody">
       <div class="rc-sec">
         <div class="rc-head">
           <div class="rc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M6 10h12M9 5v2M9 13v3"/></svg></div>
@@ -1409,7 +1417,22 @@ async function act(card, kind, text, onLine) {
   const FT = 'FT MCP', WMM = "Where's My Money", SHOW = 5;
   const $ = id => document.getElementById(id);
   const DENY = ['needs_reauth', 'server_not_connected', 'selection_required', 'blocked_by_policy', 'approval_required', 'not_in_manifest', 'not_granted', 'consent_required'];
-  let items = [], open = false;
+  let items = [], open = false, spare = null;
+  // Fold: tap the top line. Remembered for today only, so it opens fresh each morning.
+  const KEY = 'luna-recap-folded', todayKey = () => iso(new Date());
+  function sum() {
+    const bits = [];
+    if (items.length) bits.push(items.length + ' to eat first');
+    if (spare != null) bits.push('£' + spare + ' spare');
+    $('rcSum').textContent = bits.length ? '· ' + bits.join(' · ') : '';
+  }
+  function fold(f, keep) {
+    $('recap').classList.toggle('folded', f); $('rcTop').setAttribute('aria-expanded', String(!f));
+    if (keep) try { if (f) localStorage.setItem(KEY, todayKey()); else localStorage.removeItem(KEY); } catch (e) {}
+  }
+  try { if (localStorage.getItem(KEY) === todayKey()) fold(true); } catch (e) {}
+  $('rcTop').onclick = () => fold(!$('recap').classList.contains('folded'), true);
+  $('rcTop').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('rcTop').click(); } };
   const payloadOf = r => { if (r && r.payload != null) return r.payload; const b = r && r.content && r.content.find(x => x.type === 'text'); return b ? b.text : null; };
   function errText(e, name) {
     const c = e && e.code;
@@ -1432,7 +1455,7 @@ async function act(card, kind, text, onLine) {
   const order = list => list.filter(i => i.daysLeft >= 0).sort((a, b) => a.daysLeft - b.daysLeft)
     .concat(list.filter(i => i.daysLeft < 0).sort((a, b) => b.daysLeft - a.daysLeft));
   function drawFridge() {
-    const box = $('rcFridge'), n = $('rcN'); box.textContent = '';
+    const box = $('rcFridge'), n = $('rcN'); box.textContent = ''; sum();
     if (!items.length) { n.hidden = true; msg(box, 'Nothing going off soon. Nice one.'); return; }
     n.hidden = false; n.textContent = items.length;
     for (const it of (open ? items : items.slice(0, SHOW))) {
@@ -1495,6 +1518,7 @@ async function act(card, kind, text, onLine) {
   function drawMoney(text) {
     const box = $('rcMoney'), m = parseMoney(text || ''); box.textContent = '';
     if (m.spare == null) { msg(box, "Couldn't read the money summary.", true); return; }
+    spare = m.spare; sum();
     if (m.bills.length) for (const b of m.bills) {
       const r = el('div', 'rc-row'), t = el('div', 't');
       t.append(el('div', 'n', b.name), el('div', 'd', 'Due ' + ord(b.day)));
