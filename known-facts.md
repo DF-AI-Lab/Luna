@@ -39,3 +39,5 @@ Luna skips these unless they change. Remove a line once it's fully done and in t
 - Maths assessment: DONE 8 Nov (TaskNotes ticked, calendar reminder marked ✅)
 - Email Emily Sweetlove task: DONE 8 Nov (ticked off on the page)
 - Cut the hedge: DONE 18 Nov (ticked off on the page)
+- PythonAnywhere 1 Dec reminder: DONE 19 Nov (marked ✅ on the page)
+- JRHT WC works finished card: skipped twice, works are done. Don't show again.
