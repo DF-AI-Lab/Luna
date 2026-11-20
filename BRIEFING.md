@@ -34,7 +34,7 @@ The event stays in his calendar only as a record.
 ## The run
 
 ### 0. Check the tools
-You need TaskNotes, Google Calendar and Gmail tools (load with ToolSearch). If any are missing, still write
+You need TaskNotes, Google Calendar and Gmail tools, plus the FT (food) tools for food replies (load with ToolSearch). If any are missing, still write
 `briefing/today` with one `do` card: title "Luna couldn't reach <app>", plan "try again tomorrow. Add the
 connector to the Luna scheduled task." Use the other apps as normal. Never make up items.
 
@@ -57,6 +57,11 @@ there yet. Never make a card about a sorted thing again unless something new and
   - **remind** (`remindOn: YYYY-MM-DD`; old names: tomorrow, later): hide the card until that date. Add `- Remind <remindOn>: <title>` to known-facts, and bring the card back on that day (then remove the line). Change nothing in TaskNotes/Calendar.
   - **drop** (old name: skip): never show it again. Add it to known-facts so it doesn't come back. **Deletes nothing** in TaskNotes/Calendar.
   - **reply text**: do what it says (add/edit a task, add/update a calendar event, draft an email). Use a Sonnet helper for the doing.
+  - **Food (FT app)**: if a reply says Darren **used**, ate, **threw**/binned, **froze** or **defrosted** a food (e.g. "used the sausages"):
+    - `whats_in` (FT tool) to find the pack, then `mark_food` with its id and `used` / `thrown` / `freeze` / `defrost`.
+    - Several packs with the same name? Pick the soonest use-by in the place he said (fridge first if he didn't say). Mark **one** pack unless he says "all" or a number.
+    - Can't find it, or not sure which food? Don't guess. Make a card asking him.
+    - Put it in `did`, e.g. "Sausages: marked used in FT".
 - Keep a plain list of everything you actually changed, one short line each, saying where. E.g. "Maths assessment: ticked off in TaskNotes, calendar reminder marked ✅ done". Only things that really happened. This goes in `did` (step 5).
 - **Darren corrects Luna** (e.g. "this is set up", "you got this wrong", "stop asking"): fix the fact AND save the lesson
   in the right role's file, so it doesn't happen again. One short line under `## Lessons` at the bottom:
