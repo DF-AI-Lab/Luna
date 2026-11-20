@@ -113,7 +113,7 @@ Write `briefing/today` with ArtifactData `set` (pin `if_version` to the version 
 - `id`s stay the same for the same thing across days.
 - Aim for under 12 cards.
 - Cards no longer show a "Luna will" plan. Darren slides left = Done, right = Skip (saved as `remind` for tomorrow), or taps the middle to talk to Luna about the card.
-- **Food card** (id `food`, section `do` if anything is out of date, else `soon`): run FT `whats_in`. One line per dated item, sorted **most out of date first**, then soonest use-by going down. Undated food left off. Up to 12 lines, e.g. "Sausages · fridge · 2 days over" / "Yoghurt · fridge · use by tomorrow". Title like "Food: 5 out of date". `where`: "In FT".
+- **Food card** (id `food`, section `do` if anything is out of date, else `soon`): run FT `whats_in`. One line per dated item, sorted **most out of date first**, then soonest use-by going down. Undated food left off. Up to 20 lines (food card only), e.g. "Sausages · fridge · 2 days over" / "Yoghurt · fridge · use by tomorrow". Title like "Food: 5 out of date". `where`: "In FT".
 - **Pinned cards** (`ArtifactData list` on `pins`): Darren wants these front of mind. Always include a card with the same `id`
   every day, even if it would normally be dropped or is in known-facts. **Except** when it's marked done (see **The done tag**): then delete the pin instead. Refresh its lines/when if anything changed.
   The page shows it at the top, folded. Pinned cards don't count toward the 12.
